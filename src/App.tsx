@@ -3,25 +3,26 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider } from './context/CartContext';
 import CartPage from './pages/CartPage';
+import LoginPage from './pages/loginPage';
+import { AuthProvider } from './context/AuthContext';
+
 
 function App() {
  return (
-  <CartProvider>
-  <BrowserRouter>
-    <Routes>
-      {/* Home page _ Shows all products */}
-      <Route path="/" element={<Home />} />
-
-      {/* Product detail page - :id is a URL parameter */}
-      <Route path="/product/:id" element={<ProductDetail />} />
-
-                {/* Shopping cart page */}
-          <Route path="/cart" element={<CartPage />} />
-
-    </Routes>
-  </BrowserRouter>
-  </CartProvider>
- );
+  <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
+  );
 }
 
 export default App;
