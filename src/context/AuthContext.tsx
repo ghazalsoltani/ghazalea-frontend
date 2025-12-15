@@ -1,7 +1,19 @@
+import { jwtDecode } from 'jwt-decode';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-
 // User interface - represents the logged-in user's data
+// Interface for JWT payload (matches Symfony token)
+interface JWTPayload {
+  username: string;
+  firstname?: string;
+  lastname?: string;
+  id?: number;
+  roles: string[];
+  exp: number;
+  iat: number;
+}
+
+// User interface
 interface User {
   id: number;
   email: string;
@@ -14,10 +26,11 @@ interface User {
 interface AuthContextType {
   user: User | null;                 
   token: string | null;                
-  isLoading: boolean;                   
+  isLoading: boolean;
+  isAuthenticated: boolean;                    
   login: (email: string, password: string) => Promise<boolean>;  
   logout: () => void;                   
-  isAuthenticated: boolean;             
+              
 }
 
 // CREATE CONTEXT
@@ -67,25 +80,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // State for loading (checking auth on app start)
   const [isLoading, setIsLoading] = useState(true);
 
-  // EFFECT: Check for existing token on app start
+  // Check auth status on app load
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = () => {
       // Check if token exists in localStorage
       const storedToken = localStorage.getItem('token');
       
       if (storedToken) {
-        // Check if token is still valid (not expired)
-        if (!isTokenExpired(storedToken)) {
-          setToken(storedToken);
-          
-          // Fetch user data from API
-          await fetchUserData(storedToken);
-        } else {
-          // Token expired, clean up
+        try {
+          const decoded = jwtDecode<JWTPayload>(storedToken)
+          const currentTime = Date.now() / 1000;
+
+          if (decoded.exp < currentTime) {
+            console.log("Token expired");
+            localStorage.removeItem('token');
+          } else {
+            setToken(storedToken);
+            setUser({
+            id: decoded.id || 0,
+              email: decoded.username,
+              firstname: decoded.firstname || '',
+              lastname: decoded.lastname || '',
+              roles: decoded.roles || []
+            });
+          }
+        } catch (error) {
+          console.error("Invalid token", error);
           localStorage.removeItem('token');
         }
       }
-      
       setIsLoading(false);
     };
 

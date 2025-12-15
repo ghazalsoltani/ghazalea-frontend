@@ -1,46 +1,246 @@
-# Getting Started with Create React App
+# La Boutique Française - React Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive e-commerce frontend built with **React 18** and **TypeScript**, consuming a REST API powered by Symfony. This project demonstrates a decoupled architecture where the frontend and backend operate as independent applications communicating via HTTP.
 
-## Available Scripts
+![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4?logo=tailwindcss)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-In the project directory, you can run:
+## 🎯 Project Purpose
 
-### `npm start`
+This frontend application serves as the client-side interface for an e-commerce platform specializing in French leather goods. It showcases:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Decoupled Architecture**: Complete separation between frontend (React SPA) and backend (Symfony REST API)
+- **Modern React Patterns**: Functional components, hooks, context API for state management
+- **Type Safety**: Full TypeScript implementation with strict typing
+- **Responsive Design**: Mobile-first approach using Tailwind CSS utility classes
+- **JWT Authentication**: Secure user authentication with token persistence
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🏗️ Architecture Overview
 
-### `npm test`
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CLIENT (Browser)                         │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                    React Application                       │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │  │
+│  │  │   Pages     │  │ Components  │  │    Context      │   │  │
+│  │  │  - Home     │  │  - Navbar   │  │  - AuthContext  │   │  │
+│  │  │  - Product  │  │  - Product  │  │  - CartContext  │   │  │
+│  │  │  - Cart     │  │    Card     │  │                 │   │  │
+│  │  │  - Login    │  │  - Protected│  │                 │   │  │
+│  │  │  - Register │  │    Route    │  │                 │   │  │
+│  │  │  - Account  │  │             │  │                 │   │  │
+│  │  └─────────────┘  └─────────────┘  └─────────────────┘   │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                              │                                   │
+│                              │ HTTP (REST API)                   │
+│                              ▼                                   │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │              Symfony Backend (localhost:8080)              │  │
+│  │         API Platform • JWT Auth • MySQL Database           │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## ✨ Implemented Features
 
-### `npm run build`
+### Product Catalog
+- **Product Listing**: Responsive grid displaying all products with images, prices, and categories
+- **Category Filtering**: Filter products by category via navigation menu
+- **Product Detail Page**: Full product information with description, price (including VAT), and add-to-cart functionality
+- **Dynamic Pricing**: Automatic VAT calculation displayed to customers
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Shopping Cart
+- **Add/Remove Products**: Full cart management with quantity controls
+- **Persistent Cart**: Cart data stored in localStorage, survives page refresh
+- **Real-time Updates**: Cart badge in navigation shows current item count
+- **Order Summary**: Subtotal, shipping, and total calculations
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### User Authentication
+- **JWT-based Login**: Secure authentication using JSON Web Tokens
+- **User Registration**: New account creation with form validation
+- **Session Persistence**: Token stored in localStorage, automatically decoded on page refresh
+- **Protected Routes**: Certain pages require authentication to access
+- **User Profile**: Account page displaying user information
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### User Interface
+- **Responsive Navigation**: Desktop menu with mobile hamburger menu
+- **Loading States**: Spinner animations during data fetching
+- **Error Handling**: User-friendly error messages
+- **Smooth Transitions**: Hover effects and animations on interactive elements
 
-### `npm run eject`
+## 🛠️ Technology Stack
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI library with concurrent features |
+| **TypeScript** | Static typing for improved code quality |
+| **React Router 6** | Client-side routing and navigation |
+| **Tailwind CSS 3** | Utility-first CSS framework |
+| **jwt-decode** | Client-side JWT token parsing |
+| **Context API** | Global state management (Auth, Cart) |
+| **Fetch API** | HTTP requests to backend |
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 📁 Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+src/
+├── components/              # Reusable UI components
+│   ├── Navbar.tsx          # Navigation with auth state & cart badge
+│   ├── ProductCard.tsx     # Product display card
+│   └── ProtectedRoute.tsx  # Route guard for authenticated pages
+│
+├── context/                 # React Context providers
+│   ├── AuthContext.tsx     # Authentication state & JWT handling
+│   └── CartContext.tsx     # Shopping cart state & localStorage
+│
+├── pages/                   # Page components (routes)
+│   ├── Home.tsx            # Product grid with category filter
+│   ├── ProductDetail.tsx   # Single product view
+│   ├── CartPage.tsx        # Shopping cart management
+│   ├── LoginPage.tsx       # User login form
+│   ├── RegisterPage.tsx    # User registration form
+│   └── AccountPage.tsx     # User profile (protected)
+│
+├── services/                # API communication layer
+│   └── api.ts              # Centralized API calls
+│
+├── types/                   # TypeScript type definitions
+│   └── index.ts            # Product, Category, CartItem interfaces
+│
+├── App.tsx                  # Route configuration
+└── index.tsx               # Application entry point
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 🔐 Authentication Flow
 
-## Learn More
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    Authentication Flow                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  LOGIN:                                                       │
+│  1. User submits email/password                               │
+│  2. POST /api/login_check → Symfony validates credentials     │
+│  3. Symfony returns JWT token containing user data            │
+│  4. Token stored in localStorage                              │
+│  5. Token decoded to extract user info (firstname, etc.)      │
+│  6. User state updated, UI reflects logged-in status          │
+│                                                               │
+│  PAGE REFRESH:                                                │
+│  1. App loads, checks localStorage for token                  │
+│  2. If token exists, validate expiration                      │
+│  3. Decode token to restore user state                        │
+│  4. User remains authenticated (no server request needed)     │
+│                                                               │
+│  LOGOUT:                                                      │
+│  1. Clear token from localStorage                             │
+│  2. Reset user state to null                                  │
+│  3. Redirect to public page                                   │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Getting Started
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Prerequisites
+- Node.js 18+ and npm
+- Backend API running on `http://localhost:8080` (see [Backend Repository](https://github.com/ghazalsoltani/Ecommerce-Symfony-App))
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ghazalsoltani/laboutiquefrancaise-frontend.git
+cd laboutiquefrancaise-frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+```
+
+The application will open at `http://localhost:3000`
+
+### Environment Configuration
+
+The API base URL is configured in `src/services/api.ts`:
+```typescript
+const API_URL = 'http://localhost:8080/api';
+```
+
+## 🧩 Key Implementation Details
+
+### State Management with Context API
+
+The application uses React Context for global state, avoiding prop drilling:
+
+**AuthContext** manages:
+- User authentication state
+- JWT token storage and decoding
+- Login/logout functions
+- Token expiration validation
+
+**CartContext** manages:
+- Cart items array
+- Add/remove/update quantity functions
+- Total calculations
+- localStorage persistence
+
+### Type-Safe API Communication
+
+All API responses are typed with TypeScript interfaces:
+
+```typescript
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  illustration: string;
+  price: number;
+  tva: number;
+  category: Category;
+  isHomepage: boolean;
+}
+```
+
+### Protected Routes Pattern
+
+Routes requiring authentication are wrapped with `ProtectedRoute`:
+
+```tsx
+<Route path="/account" element={
+  <ProtectedRoute>
+    <AccountPage />
+  </ProtectedRoute>
+} />
+```
+
+## 🔗 Related Repository
+
+This frontend consumes the API from the Symfony backend:
+- **Backend Repository**: [Ecommerce-Symfony-App](https://github.com/ghazalsoltani/Ecommerce-Symfony-App)
+
+## 📝 Development Approach
+
+This project was developed following these principles:
+
+1. **Component-Based Architecture**: Each UI element is a reusable, self-contained component
+2. **Separation of Concerns**: Clear separation between UI (components), state (context), and data fetching (services)
+3. **Type Safety First**: TypeScript interfaces defined before implementation
+4. **Mobile-First Design**: Responsive design starting from mobile breakpoints
+5. **Progressive Enhancement**: Core functionality works, enhanced features layer on top
+
+## 👤 Author
+
+**Ghazal Soltani**
+- GitHub: [@ghazalsoltani](https://github.com/ghazalsoltani)
+- LinkedIn: [ghazal-soltani](https://linkedin.com/in/ghazal-soltani)
+
+## 📄 License
+
+This project is licensed under the MIT License.

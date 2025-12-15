@@ -49,8 +49,7 @@ function ProductDetail() {
     : 0;
 
   // Handle category click - navigate to home with filter
-  // For now, just navigate to home (we'll improve this later)
-  const handleCategoryClick = () => {
+  const handleCategoryClick = ( category: Category | null ) => {
     // This will be handled by navigation
   };
 
