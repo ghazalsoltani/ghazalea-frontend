@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 function CartPage () {
     // Gives access to all cart data and functions
@@ -11,6 +12,8 @@ function CartPage () {
         clearCart,
         totalPrice
     } = useCart();
+
+    const { isAuthenticated } = useAuth();
     
 // If cart is empty, show empty state
   if (items.length === 0) {
@@ -205,13 +208,21 @@ function CartPage () {
               </div>
 
               {/* Checkout button */}
-              <button
-                type="button"
-                className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors mt-4"
-              >
-                Passer la commande
-              </button>
-              
+              {isAuthenticated ? (
+                <Link
+                  to="/checkout/address"
+                  className="w-full block text-center bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  Passer la commande
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="w-full block text-center bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  Se connecter pour commander
+                </Link>
+              )}
               <p className="text-xs text-gray-500 text-center mt-4">
                 Paiement sécurisé par Stripe
               </p>
