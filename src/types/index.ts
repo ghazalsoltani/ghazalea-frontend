@@ -14,7 +14,7 @@ export interface Product {
     price: number;
     tva: number;
     category: Category;
-    isHomeage: boolean
+    isHomepage: boolean
 }
 export interface CartItem {
     product: Product;

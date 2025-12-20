@@ -114,7 +114,7 @@ function RegisterPage() {
         {/* Logo / Title */}
         <Link to="/" className="flex justify-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            🛍️ La Boutique Française
+            🛍️ Ghazaléa
           </h1>
         </Link>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">

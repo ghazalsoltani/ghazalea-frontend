@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Category } from '../types';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Category } from "../types";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
   readonly categories: Category[];
@@ -11,31 +11,35 @@ interface NavbarProps {
 
 function Navbar({ categories, onCategoryClick }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Get cart data
   const { totalItems } = useCart();
-  
-  // Get auth data
   const { user, isAuthenticated, logout } = useAuth();
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0">
-            <h1 className="text-xl font-bold text-gray-900">
-              🛍️ La Boutique Française
-            </h1>
+          <Link
+            to="/"
+            onClick={() => onCategoryClick(null)}
+            className="flex items-center gap-3"
+          >
+            <img
+              src="/images/logo.png"
+              alt="Ghazaléa"
+              className="h-12 w-12 object-contain"
+            />
+            <span className="text-2xl font-serif font-bold text-gray-900">
+              Ghazaléa
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-1">
             <button
               type="button"
               onClick={() => onCategoryClick(null)}
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-medium transition-all"
             >
               Tous les produits
             </button>
@@ -45,7 +49,7 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
                 type="button"
                 key={category.id}
                 onClick={() => onCategoryClick(category)}
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-medium transition-all"
               >
                 {category.name}
               </button>
@@ -53,73 +57,77 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
           </div>
 
           {/* Right side - Auth + Cart */}
-          <div className="flex items-center space-x-4">
-            
+          <div className="flex items-center space-x-3">
             {/* Auth buttons */}
             {isAuthenticated ? (
-              // User is logged in
-              <div className="hidden md:flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-3">
                 <span className="text-sm text-gray-600">
-                  Bonjour, {user?.firstname}
+                  Bonjour,{" "}
+                  <span className="font-medium text-gray-900">
+                    {user?.firstname}
+                  </span>
                 </span>
-                <Link 
+                <Link
                   to="/account"
-                  className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                  className="px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg text-sm font-medium transition-all"
                 >
                   Mon compte
+                </Link>
+                <Link
+                  to="/orders"
+                  className="px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg text-sm font-medium transition-all"
+                >
+                  Commandes
                 </Link>
                 <button
                   type="button"
                   onClick={logout}
-                  className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                  className="px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg text-sm font-medium transition-all"
                 >
                   Déconnexion
                 </button>
               </div>
             ) : (
-              // User is not logged in
-              <div className="hidden md:flex items-center space-x-4">
-                <Link 
+              <div className="hidden md:flex items-center space-x-3">
+                <Link
                   to="/login"
-                  className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg text-sm font-medium transition-all"
                 >
                   Connexion
                 </Link>
-                <Link 
+                <Link
                   to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all"
                 >
                   Inscription
                 </Link>
               </div>
             )}
-            
+
             {/* Cart link */}
-            <Link 
-              to="/cart" 
-              className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
-              aria-label={`Panier avec ${totalItems} article${totalItems > 1 ? 's' : ''}`}
+            <Link
+              to="/cart"
+              className="relative p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+              aria-label={`Panier avec ${totalItems} article${
+                totalItems > 1 ? "s" : ""
+              }`}
             >
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
-                aria-hidden="true"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                 />
               </svg>
-              
+
               {totalItems > 0 && (
-                <span 
-                  className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
-                  aria-hidden="true"
-                >
+                <span className="absolute -top-1 -right-1 bg-gray-900 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -129,25 +137,23 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
-              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-              aria-expanded={mobileMenuOpen}
+              className="md:hidden p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
             >
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
-                aria-hidden="true"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d={mobileMenuOpen 
-                    ? "M6 18L18 6M6 6l12 12"
-                    : "M4 6h16M4 12h16M4 18h16"
-                  } 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d={
+                    mobileMenuOpen
+                      ? "M6 18L18 6M6 6l12 12"
+                      : "M4 6h16M4 12h16M4 18h16"
+                  }
                 />
               </svg>
             </button>
@@ -156,18 +162,18 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden py-4 border-t border-gray-100">
             <button
               type="button"
               onClick={() => {
                 onCategoryClick(null);
                 setMobileMenuOpen(false);
               }}
-              className="block w-full text-left py-2 text-gray-600 hover:text-gray-900 font-medium"
+              className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
             >
               Tous les produits
             </button>
-            
+
             {categories.map((category) => (
               <button
                 type="button"
@@ -176,23 +182,33 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
                   onCategoryClick(category);
                   setMobileMenuOpen(false);
                 }}
-                className="block w-full text-left py-2 text-gray-600 hover:text-gray-900 font-medium"
+                className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
               >
                 {category.name}
               </button>
             ))}
 
             {/* Mobile auth links */}
-            <div className="border-t mt-4 pt-4">
+            <div className="border-t border-gray-100 mt-4 pt-4">
               {isAuthenticated ? (
                 <>
-                  <p className="py-2 text-gray-600">Bonjour, {user?.firstname}</p>
-                  <Link 
+                  <p className="px-4 py-2 text-gray-600">
+                    Bonjour,{" "}
+                    <span className="font-medium">{user?.firstname}</span>
+                  </p>
+                  <Link
                     to="/account"
-                    className="block py-2 text-gray-600 hover:text-gray-900"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Mon compte
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Mes commandes
                   </Link>
                   <button
                     type="button"
@@ -200,23 +216,23 @@ function Navbar({ categories, onCategoryClick }: NavbarProps) {
                       logout();
                       setMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left py-2 text-gray-600 hover:text-gray-900"
+                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
                   >
                     Déconnexion
                   </button>
                 </>
               ) : (
                 <>
-                  <Link 
+                  <Link
                     to="/login"
-                    className="block py-2 text-gray-600 hover:text-gray-900"
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Connexion
                   </Link>
-                  <Link 
+                  <Link
                     to="/register"
-                    className="block py-2 text-blue-600 hover:text-blue-800 font-medium"
+                    className="block px-4 py-3 text-gray-900 font-medium hover:bg-gray-50 rounded-lg"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Inscription

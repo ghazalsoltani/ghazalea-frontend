@@ -16,8 +16,6 @@ import AccountPage from "./pages/AccountPage";
 import LoginPage from "./pages/loginPage";
 import ProductDetail from "./pages/ProductDetail";
 
-
-
 function App() {
   return (
     <BrowserRouter>
@@ -33,29 +31,64 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
 
               {/* Protected routes */}
-              <Route path="/account" element={
-                <ProtectedRoute><AccountPage /></ProtectedRoute>
-              } />
-              <Route path="/orders" element={
-                <ProtectedRoute><OrdersPage /></ProtectedRoute>
-              } />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <AccountPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <OrdersPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Checkout flow (protected) */}
-              <Route path="/checkout/address" element={
-                <ProtectedRoute><AddressStep /></ProtectedRoute>
-              } />
-              <Route path="/checkout/carrier" element={
-                <ProtectedRoute><CarrierStep /></ProtectedRoute>
-              } />
-              <Route path="/checkout/summary" element={
-                <ProtectedRoute><SummaryStep /></ProtectedRoute>
-              } />
-              <Route path="/checkout/success" element={
-                <ProtectedRoute><SuccessPage /></ProtectedRoute>
-              } />
-              <Route path="/checkout/cancel" element={
-                <ProtectedRoute><CancelPage /></ProtectedRoute>
-              } />
+              <Route
+                path="/checkout/address"
+                element={
+                  <ProtectedRoute>
+                    <AddressStep />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout/carrier"
+                element={
+                  <ProtectedRoute>
+                    <CarrierStep />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout/summary"
+                element={
+                  <ProtectedRoute>
+                    <SummaryStep />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout/success"
+                element={
+                  <ProtectedRoute>
+                    <SuccessPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout/cancel"
+                element={
+                  <ProtectedRoute>
+                    <CancelPage />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </CheckoutProvider>
         </CartProvider>
