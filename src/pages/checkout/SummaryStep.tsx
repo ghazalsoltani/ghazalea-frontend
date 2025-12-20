@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
-import { useCheckout } from "../../context/CheckoutContext";
-import { api } from "../../services/api";
-import CheckoutSteps from "../../components/CheckoutSteps";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
+import { useCheckout } from '../../context/CheckoutContext';
+import { api } from '../../services/api';
+import CheckoutSteps from '../../components/CheckoutSteps';
 
 function SummaryStep() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const { items, totalPrice, clearCart } = useCart();
-  const { state, setOrderId } = useCheckout();
+  const { items, totalPrice } = useCart();
+  const { state } = useCheckout();
 
   // Redirect if previous steps not completed
   if (!state.selectedAddress || !state.selectedCarrier) {
@@ -26,8 +26,8 @@ function SummaryStep() {
   const shipping = selectedCarrier.price;
   const total = subtotal + shipping;
 
-  // Handle place order
-  const handlePlaceOrder = async () => {
+  // Handle payment with Stripe
+  const handlePayment = async () => {
     setLoading(true);
     setError(null);
 
@@ -41,16 +41,18 @@ function SummaryStep() {
         })),
       };
 
-      const result = await api.createOrder(orderData);
+      // Create checkout session and get Stripe URL
+      const result = await api.createCheckoutSession(orderData);
 
-      if (result.success) {
-        setOrderId(result.orderId);
-        clearCart();
-        navigate('/checkout/confirmation');
+      if (result.success && result.checkoutUrl) {
+        // Redirect to Stripe Checkout page
+        window.location.href = result.checkoutUrl;
+      } else {
+        setError('Erreur lors de la création de la session de paiement');
       }
     } catch (err) {
-      setError('Une erreur est survenue lors de la création de la commande');
-      console.error(err);
+      console.error('Payment error:', err);
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
@@ -196,24 +198,45 @@ function SummaryStep() {
                 </div>
               </div>
 
-              {/* Place order button */}
+              {/* Stripe payment button */}
               <button
                 type="button"
-                onClick={handlePlaceOrder}
+                onClick={handlePayment}
                 disabled={loading}
                 className={`
                   w-full mt-6 py-4 rounded-lg font-semibold text-white transition-colors
+                  flex items-center justify-center gap-2
                   ${loading
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-green-600 hover:bg-green-700'
                   }
                 `}
               >
-                {loading ? 'Traitement...' : 'Confirmer la commande'}
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Redirection vers le paiement...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Payer {total.toFixed(2).replace('.', ',')} €
+                  </>
+                )}
               </button>
 
+              {/* Stripe badge */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-gray-500 text-xs">
+                <svg className="w-8 h-8" viewBox="0 0 60 25" fill="currentColor">
+                  <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a10.8 10.8 0 01-4.56 1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.02 1.04-.06 1.58zm-6.06-5.7c-1.08 0-2.03.76-2.21 2.56h4.36c-.04-1.67-.9-2.56-2.15-2.56zM43.24 20.3V5.5l4.14-.88v15.68h-4.14zm-6.09 0V5.5l4.14-.88v15.68h-4.14zm-4.46-5.28c0 1.95-1.6 3.17-4.1 3.17-1.88 0-3.47-.62-4.58-1.49l1.46-2.93c.87.62 2.1 1.2 3.34 1.2.76 0 1.17-.25 1.17-.67 0-1.33-5.72-.73-5.72-5.04 0-2.16 1.71-3.79 4.58-3.79 1.46 0 2.85.33 4 .95l-1.36 2.93c-.76-.49-1.77-.87-2.86-.87-.65 0-1.02.22-1.02.6 0 1.2 5.72.57 5.72 5 0-.04 0-.04-.63-.06zM20.72 5.87l4.14-.88v2.28l-4.14.88V5.87zm0 3.28h4.14v11.15h-4.14V9.15zm-4.64 0c.33 0 .62.02.87.07v3.79c-.35-.07-.73-.11-1.13-.11-1.56 0-2.48.78-2.48 2.65v5.6h-4.14V9.15h3.98v1.71c.49-1.24 1.6-1.82 2.9-1.71zM4.26 14.66c0-4.9 3.18-9.52 8.7-9.52.84 0 1.62.11 2.32.31l-.95 3.52c-.35-.13-.73-.2-1.17-.2-2.48 0-4.2 2.21-4.2 5.28v6.25H4.26v-5.64z" />
+                </svg>
+                <span>Paiement sécurisé par Stripe</span>
+              </div>
+
               <p className="text-xs text-gray-500 text-center mt-4">
-                En passant commande, vous acceptez nos conditions générales de vente
+                En cliquant sur "Payer", vous serez redirigé vers la page de paiement sécurisée Stripe
               </p>
             </div>
           </div>

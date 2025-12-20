@@ -12,11 +12,13 @@ const getAuthHeaders = (): HeadersInit => {
 };
 
 export const api = {
-    // Products & categories
+    // ============================================
+    // PRODUCTS & CATEGORIES
+    // ============================================
     async getProducts(): Promise<Product[]> {
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
-        return data.member || data['hydra:member'] || [];
+        return data.member || data['hydra:member'] || data || [];
     },
 
     async getProduct(id: number): Promise<Product> {
@@ -28,9 +30,11 @@ export const api = {
         const response = await fetch(`${API_URL}/categories`);
         const data = await response.json();
         return data.member || data['hydra:member'] || data || [];
-
     },
-    // Addresses
+
+    // ============================================
+    // ADDRESSES
+    // ============================================
     async getAddresses(): Promise<Address[]> {
         const response = await fetch(`${API_URL}/user/addresses`, {
             headers: getAuthHeaders(),
@@ -43,10 +47,10 @@ export const api = {
         const response = await fetch(`${API_URL}/user/addresses`, {
             method: 'POST',
             headers: getAuthHeaders(),
-            body: JSON.stringify(addressData),        
-            });
-            if (!response.ok) throw new Error('Failed to create address');
-            return response.json();
+            body: JSON.stringify(addressData),
+        });
+        if (!response.ok) throw new Error('Failed to create address');
+        return response.json();
     },
 
     async deleteAddress(id: number): Promise<void> {
@@ -57,14 +61,18 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete address');
     },
 
-    // Carriers
+    // ============================================
+    // CARRIERS
+    // ============================================
     async getCarriers(): Promise<Carrier[]> {
         const response = await fetch(`${API_URL}/carriers`);
         if (!response.ok) throw new Error('Failed to fetch carriers');
         return response.json();
     },
 
-    //Orders
+    // ============================================
+    // ORDERS
+    // ============================================
     async createOrder(data: {
         addressId: number;
         carrierId: number;
@@ -92,6 +100,34 @@ export const api = {
             headers: getAuthHeaders(),
         });
         if (!response.ok) throw new Error('Failed to fetch order');
+        return response.json();
+    },
+
+    // ============================================
+    // STRIPE CHECKOUT
+    // ============================================
+    async createCheckoutSession(data: {
+        addressId: number;
+        carrierId: number;
+        items: { productId: number; quantity: number }[];
+    }): Promise<{ success: boolean; checkoutUrl: string; sessionId: string; orderId: number }> {
+        const response = await fetch(`${API_URL}/checkout/create-session`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create checkout session');
+        }
+        return response.json();
+    },
+
+    async verifyPayment(sessionId: string): Promise<{ success: boolean; paid: boolean; orderId?: number }> {
+        const response = await fetch(`${API_URL}/checkout/verify/${sessionId}`, {
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to verify payment');
         return response.json();
     },
 };
