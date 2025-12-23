@@ -1,4 +1,4 @@
-# La Boutique Française - React Frontend
+# Ghazaléa - Frontend
 
 A modern, responsive e-commerce frontend built with React 18 and TypeScript, consuming a REST API powered by Symfony. This project demonstrates a decoupled architecture where the frontend and backend operate as independent applications communicating via HTTP.
 
@@ -300,7 +300,3 @@ This project was developed following these principles:
 **Ghazal Soltani**
 - GitHub: [@ghazalsoltani](https://github.com/ghazalsoltani)
 - LinkedIn: [ghazal-soltani](https://www.linkedin.com/in/ghazal-soltani/)
-
-## 📄 License
-
-This project is licensed under the MIT License.

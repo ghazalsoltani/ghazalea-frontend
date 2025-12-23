@@ -12,9 +12,7 @@ const getAuthHeaders = (): HeadersInit => {
 };
 
 export const api = {
-    // ============================================
     // PRODUCTS & CATEGORIES
-    // ============================================
     async getProducts(): Promise<Product[]> {
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
@@ -32,9 +30,7 @@ export const api = {
         return data.member || data['hydra:member'] || data || [];
     },
 
-    // ============================================
     // ADDRESSES
-    // ============================================
     async getAddresses(): Promise<Address[]> {
         const response = await fetch(`${API_URL}/user/addresses`, {
             headers: getAuthHeaders(),
@@ -61,18 +57,14 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete address');
     },
 
-    // ============================================
     // CARRIERS
-    // ============================================
     async getCarriers(): Promise<Carrier[]> {
         const response = await fetch(`${API_URL}/carriers`);
         if (!response.ok) throw new Error('Failed to fetch carriers');
         return response.json();
     },
 
-    // ============================================
     // ORDERS
-    // ============================================
     async createOrder(data: {
         addressId: number;
         carrierId: number;
@@ -103,9 +95,7 @@ export const api = {
         return response.json();
     },
 
-    // ============================================
     // STRIPE CHECKOUT
-    // ============================================
     async createCheckoutSession(data: {
         addressId: number;
         carrierId: number;
