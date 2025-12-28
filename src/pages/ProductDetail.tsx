@@ -1,59 +1,98 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Product, Category } from '../types';
-import { api } from '../services/api';
-import { useCart } from '../context/CartContext';
-import Navbar from '../components/Navbar';
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Product, Category } from "../types";
+import { api } from "../services/api";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
-  
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Get addToCart from context
-  const { addToCart } = useCart();
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
-  // Fetch product and categories
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+
+  // Fetch product, categories, and wishlist status
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return;
-      
+
       try {
         setLoading(true);
-        
-        // Fetch both product and categories
+
         const [productData, categoriesData] = await Promise.all([
           api.getProduct(parseInt(id)),
-          api.getCategories()
+          api.getCategories(),
         ]);
-        
+
         setProduct(productData);
         setCategories(categoriesData);
+
+        // Check wishlist status if authenticated
+        if (isAuthenticated) {
+          try {
+            const wishlistStatus = await api.checkWishlist(parseInt(id));
+            setInWishlist(wishlistStatus.inWishlist);
+          } catch (err) {
+            console.error("Error checking wishlist:", err);
+          }
+        }
       } catch (err) {
-        setError('Produit non trouvé');
-        console.error('Error fetching product:', err);
+        setError("Produit non trouvé");
+        console.error("Error fetching product:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
-  // Calculate price with tax
-  const priceWithTax = product 
-    ? product.price * (1 + product.tva / 100) 
-    : 0;
+  const priceWithTax = product ? product.price * (1 + product.tva / 100) : 0;
 
-  // Handle category click - navigate to home with filter
-  const handleCategoryClick = ( category: Category | null ) => {
-    // This will be handled by navigation
+  const handleCategoryClick = (category: Category | null) => {
+    if (category === null) {
+      navigate("/home");
+    } else {
+      navigate(`/category/${category.slug}`);
+    }
   };
 
-  // Loading state
+  // Toggle wishlist and optimistic update
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (!product || wishlistLoading) return;
+
+    const previousState = inWishlist;
+    setInWishlist(!inWishlist);
+    setWishlistLoading(true);
+
+    try {
+      if (previousState) {
+        await api.removeFromWishlist(product.id);
+      } else {
+        await api.addToWishlist(product.id);
+      }
+    } catch (err) {
+      setInWishlist(previousState);
+      console.error("Error toggling wishlist:", err);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -62,20 +101,16 @@ function ProductDetail() {
     );
   }
 
-  // Error state
   if (error || !product) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar categories={[]} onCategoryClick={handleCategoryClick} />
+        <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Produit non trouvé
             </h1>
-            <Link 
-              to="/" 
-              className="text-blue-600 hover:text-blue-800"
-            >
+            <Link to="/home" className="text-blue-600 hover:text-blue-800">
               ← Retour à l'accueil
             </Link>
           </div>
@@ -84,20 +119,31 @@ function ProductDetail() {
     );
   }
 
-  // Main render
+  const categorySlug =
+    product.category.slug || product.category.name.toLowerCase();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Full Navbar with cart icon */}
       <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
 
       {/* Back link */}
       <div className="max-w-7xl mx-auto px-4 py-4">
-        <Link 
-          to="/" 
+        <Link
+          to="/home"
           className="text-gray-600 hover:text-gray-900 flex items-center text-sm"
         >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-4 h-4 mr-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Retour aux produits
         </Link>
@@ -106,11 +152,10 @@ function ProductDetail() {
       {/* Product detail */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          
           {/* Left column - Product image */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
-              src={`http://localhost:8080/uploads/${product.illustration}`}
+              src={`http://127.0.0.1:8080/uploads/${product.illustration}`}
               alt={product.name}
               className="w-full h-auto object-cover"
             />
@@ -120,9 +165,16 @@ function ProductDetail() {
           <div>
             {/* Breadcrumb */}
             <nav className="text-sm text-gray-500 mb-4">
-              <Link to="/" className="hover:text-gray-700">Accueil</Link>
+              <Link to="/home" className="hover:text-gray-700">
+                Accueil
+              </Link>
               <span className="mx-2">›</span>
-              <span className="text-blue-600">{product.category.name}</span>
+              <Link
+                to={`/category/${categorySlug}`}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                {product.category.name}
+              </Link>
               <span className="mx-2">›</span>
               <span>{product.name}</span>
             </nav>
@@ -133,8 +185,8 @@ function ProductDetail() {
             </h1>
 
             {/* Price */}
-            <p className="text-3xl font-bold text-gray-900 mb-6">
-              {priceWithTax.toFixed(2).replace('.', ',')} €
+            <p className="text-3xl font-bold text-gray-900 mb-2">
+              {priceWithTax.toFixed(2).replace(".", ",")} €
             </p>
 
             {/* Tax info */}
@@ -143,27 +195,62 @@ function ProductDetail() {
             </p>
 
             {/* Description */}
-            <div 
+            <div
               className="prose text-gray-600 mb-8"
               dangerouslySetInnerHTML={{ __html: product.description }}
             />
 
-            {/* Add to cart button */}
-            <button
-              type="button"
-              onClick={() => addToCart(product)}
-              className="w-full bg-green-600 text-white py-4 px-8 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
-            >
-              Ajouter au panier
-            </button>
+            {/* Buttons container */}
+            <div className="flex gap-3">
+              {/* Add to cart button */}
+              <button
+                type="button"
+                onClick={() => addToCart(product)}
+                className="flex-1 bg-green-600 text-white py-4 px-8 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+              >
+                Ajouter au panier
+              </button>
+
+              {/* Wishlist button */}
+              <button
+                type="button"
+                onClick={handleWishlistToggle}
+                disabled={wishlistLoading}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  inWishlist
+                    ? "bg-red-50 border-red-300 text-red-500"
+                    : "bg-white border-gray-300 text-gray-400 hover:border-red-300 hover:text-red-500"
+                } ${wishlistLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                title={
+                  inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"
+                }
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill={inWishlist ? "currentColor" : "none"}
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </button>
+            </div>
 
             {/* Category badge */}
             <div className="mt-8 pt-8 border-t">
               <p className="text-sm text-gray-500">
-                Catégorie: 
-                <span className="ml-2 inline-block bg-gray-100 px-3 py-1 rounded-full text-gray-700">
+                Catégorie:
+                <Link
+                  to={`/category/${categorySlug}`}
+                  className="ml-2 inline-block bg-gray-100 px-3 py-1 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
+                >
                   {product.category.name}
-                </span>
+                </Link>
               </p>
             </div>
           </div>

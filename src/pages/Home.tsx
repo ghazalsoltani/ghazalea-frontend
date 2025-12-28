@@ -9,8 +9,13 @@ import CategorySection from "../components/CategorySection";
 import TrustBadges from "../components/TrustBadges";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Home() {
+  // Get category slug from URL
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -51,25 +56,39 @@ function Home() {
     fetchData();
   }, []);
 
-  // Handle category filter
-  const handleCategoryClick = (category: Category | null) => {
-    console.log('Category clicked:', category);
-    console.log('All products:', products);
-    
-    setSelectedCategory(category);
-
-    if (category === null) {
-      setFilteredProducts(products);
-    } else {
-      const filtered = products.filter(
-        (product) => product.category.id === category.id
+  // Filter products when slug or products change
+  useEffect(() => {
+    if (slug && categories.length > 0) {
+      // Find categry by slug
+      const category = categories.find(
+        (c) => c.slug.toLocaleLowerCase() === slug.toLocaleLowerCase()
       );
-      console.log('Filtered products:', filtered);
-      setFilteredProducts(filtered);
+      if (category) {
+        setSelectedCategory(category);
+        const filtered = products.filter(
+          (product) => product.category.id === category.id
+        );
+        setFilteredProducts(filtered);
+      } else {
+        // Invalid slug and show all products
+        setSelectedCategory(null);
+        setFilteredProducts(products);
+      }
+    } else {
+      // if no slug show all products
+      setSelectedCategory(null);
+      setFilteredProducts(products);
     }
-};
+  }, [slug, products, categories]);
 
-  
+  // Handle category click, navigate to category URL
+  const handleCategoryClick = (category: Category | null) => {
+    if (category === null) {
+      navigate("/home");
+    } else {
+      navigate(`/category/${category.slug}`);
+    }
+  };
 
   // Handle add to cart
   const handleAddToCart = (product: Product) => {
@@ -135,7 +154,12 @@ function Home() {
       <TrustBadges />
 
       {/* Category Section - only on main page */}
-      {isMainPage && <CategorySection categories={categories} onCategoryClick={handleCategoryClick} />}
+      {isMainPage && (
+        <CategorySection
+          categories={categories}
+          onCategoryClick={handleCategoryClick}
+        />
+      )}
 
       {/* Products Section */}
       <section className="flex-1 py-12">
@@ -184,7 +208,6 @@ function Home() {
       <Footer />
     </div>
   );
-
 }
 
 export default Home;

@@ -1,6 +1,6 @@
 import { Product, Category, Address, AddressFormData, Carrier, Order } from '../types';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8080/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = (): HeadersInit => {
@@ -118,6 +118,40 @@ export const api = {
             headers: getAuthHeaders(),
         });
         if (!response.ok) throw new Error('Failed to verify payment');
+        return response.json();
+    },
+    // WISHLIST
+    async getWishlist(): Promise<Product[]> {
+        const response = await fetch(`${API_URL}/wishlist`, {
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch wishlist');
+        return response.json();
+    },
+
+    async addToWishlist(productId: number): Promise<{ success: boolean; inWishlist: boolean }> {
+        const response = await fetch(`${API_URL}/wishlist/add/${productId}`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to add to wishlist');
+        return response.json();
+    },
+
+    async removeFromWishlist(productId: number): Promise<{ success: boolean; inWishlist: boolean }> {
+        const response = await fetch(`${API_URL}/wishlist/remove/${productId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to remove from wishlist');
+        return response.json();
+    },
+
+    async checkWishlist(productId: number): Promise<{ inWishlist: boolean }> {
+        const response = await fetch(`${API_URL}/wishlist/check/${productId}`, {
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) return { inWishlist: false };
         return response.json();
     },
 };

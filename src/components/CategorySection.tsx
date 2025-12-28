@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom";
 import { Category } from "../types";
 
 interface CategorySectionProps {
   readonly categories?: Category[];
-  readonly onCategoryClick?: (category: Category) => void;
+  readonly onCategoryClick?: (Category: Category) => void;
 }
 
-// Category images mapping
+// category image mapping
 const categoryImages: Record<string, string> = {
   Sacs: "/images/categories/sacs.jpg",
   Bijoux: "/images/categories/bijoux.jpg",
@@ -19,26 +20,9 @@ const categoryDescriptions: Record<string, string> = {
   Lunettes: "Lunettes de soleil tendance",
 };
 
-function CategorySection({
-  categories = [],
-  onCategoryClick,
-}: CategorySectionProps) {
+function CategorySection({ categories = [] }: CategorySectionProps) {
   // Safe categories array
   const safeCategories = Array.isArray(categories) ? categories : [];
-
-  const handleClick = (category: Category) => {
-    if (onCategoryClick) {
-      onCategoryClick(category);
-    }
-
-    // Scroll to products section
-    setTimeout(() => {
-      const productsSection = document.querySelector("section.flex-1");
-      if (productsSection) {
-        productsSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
-  };
 
   // Don't render if no categories
   if (safeCategories.length === 0) {
@@ -57,11 +41,10 @@ function CategorySection({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {safeCategories.map((category) => (
-            <button
+            <Link
               key={category.id}
-              type="button"
-              onClick={() => handleClick(category)}
-              className="group relative overflow-hidden rounded-2xl aspect-[4/5] shadow-lg text-left"
+              to={`/category/${category.slug}`}
+              className="group relative overflow-hidden rounded-2xl aspect-[4/5] shadow-lg"
             >
               {/* Image */}
               <img
@@ -102,7 +85,7 @@ function CategorySection({
                   </svg>
                 </span>
               </div>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

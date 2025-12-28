@@ -5,16 +5,19 @@ function Footer() {
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
+          {/* Brand - Logo clickable */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
+            <Link
+              to="/home"
+              className="inline-block mb-4 transition-transform hover:scale-105"
+              title="Accueil Ghazaléa"
+            >
               <img
-                src="/images/logo.png"
-                alt="Ghazaléa"
-                className="h-12 w-12 object-contain"
+                src="/images/logo1.png"
+                alt="Ghazaléa - Accueil"
+                className="h-12 w-auto lg:h-12 object-contain"
               />
-              <span className="text-2xl font-serif text-white">Ghazaléa</span>
-            </div>
+            </Link>
             <p className="text-gray-400 mb-6 max-w-md">
               Accessoires de mode artisanaux. Découvrez notre collection de
               sacs, bijoux et lunettes de soleil.
@@ -26,6 +29,7 @@ function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors"
+                aria-label="Instagram"
               >
                 <svg
                   className="w-5 h-5"
@@ -41,6 +45,7 @@ function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors"
+                aria-label="Facebook"
               >
                 <svg
                   className="w-5 h-5"
@@ -58,13 +63,13 @@ function Footer() {
             <h4 className="text-white font-semibold mb-4">Boutique</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="hover:text-white transition-colors">
+                <Link to="/home" className="hover:text-white transition-colors">
                   Tous les produits
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/?category=sacs"
+                  to="/category/sacs"
                   className="hover:text-white transition-colors"
                 >
                   Sacs
@@ -72,7 +77,7 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  to="/?category=bijoux"
+                  to="/category/bijoux"
                   className="hover:text-white transition-colors"
                 >
                   Bijoux
@@ -80,7 +85,7 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  to="/?category=lunettes"
+                  to="/category/lunettes"
                   className="hover:text-white transition-colors"
                 >
                   Lunettes
@@ -129,7 +134,7 @@ function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm">
-            © 2024 La Boutique Française. Tous droits réservés.
+            © 2024 Ghazaléa. Tous droits réservés.
           </p>
 
           {/* Payment Icons */}

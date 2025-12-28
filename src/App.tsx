@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import CartPage from "./pages/CartPage";
 import Home from "./pages/Home";
@@ -15,6 +15,7 @@ import RegisterPage from "./pages/RegisterPage";
 import AccountPage from "./pages/AccountPage";
 import LoginPage from "./pages/loginPage";
 import ProductDetail from "./pages/ProductDetail";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   return (
@@ -23,8 +24,12 @@ function App() {
         <CartProvider>
           <CheckoutProvider>
             <Routes>
+              {/*Redirect to /home */}
+              <Route path="/" element={<Navigate to="/home" replace />} />
+
               {/* Public routes */}
-              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/category/:slug" element={<Home />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/login" element={<LoginPage />} />
@@ -86,6 +91,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CancelPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/favorites"
+                element={
+                  <ProtectedRoute>
+                    <FavoritesPage />
                   </ProtectedRoute>
                 }
               />

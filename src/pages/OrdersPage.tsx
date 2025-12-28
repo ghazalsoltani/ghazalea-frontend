@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Category, Order } from "../types";
 import { api } from "../services/api";
+
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { Link } from "react-router-dom";
 
 // Order state labels
 const stateLabels: { [key: number]: { label: string; color: string } } = {
@@ -18,19 +19,20 @@ function OrdersPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            setLoading(true);
-            const [ordersData, categoriesData] = await Promise.all ([
-                api.getOrders(),
-                api.getCategories(),
-            ]);
-            setOrders(ordersData);
+      try {
+        setLoading(true);
+        const [ordersData, categoriesData] = await Promise.all([
+          api.getOrders(),
+          api.getCategories(),
+        ]);
+        setOrders(ordersData);
         setCategories(categoriesData);
       } catch (err) {
-        setError('Impossible de charger vos commandes');
+        setError("Impossible de charger vos commandes");
         console.error(err);
       } finally {
         setLoading(false);
@@ -39,11 +41,19 @@ function OrdersPage() {
 
     fetchData();
   }, []);
+  // Handle category click, navigate to category page
+  const handleCategoryClick = (category: Category | null) => {
+    if (category === null) {
+      navigate("/home");
+    } else {
+      navigate(`/category/${category.slug}`);
+    }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar categories={categories} onCategoryClick={() => {}} />
+        <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
         <div className="flex items-center justify-center py-16">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
@@ -53,12 +63,10 @@ function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar categories={categories} onCategoryClick={() => {}} />
+      <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Mes commandes
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Mes commandes</h1>
 
         {error && (
           <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
@@ -88,7 +96,7 @@ function OrdersPage() {
               Vous n'avez pas encore passé de commande.
             </p>
             <Link
-              to="/"
+              to="/home"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
             >
               Découvrir nos produits
@@ -96,11 +104,17 @@ function OrdersPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {orders.map(order => {
-              const stateInfo = stateLabels[order.state] || { label: 'Inconnu', color: 'bg-gray-100 text-gray-800' };
+            {orders.map((order) => {
+              const stateInfo = stateLabels[order.state] || {
+                label: "Inconnu",
+                color: "bg-gray-100 text-gray-800",
+              };
 
               return (
-                <div key={order.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div
+                  key={order.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                >
                   {/* Order header */}
                   <div className="bg-gray-50 px-6 py-4 border-b flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -108,14 +122,16 @@ function OrdersPage() {
                         Commande #{order.id}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {new Date(order.createdAt).toLocaleDateString('fr-FR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
+                        {new Date(order.createdAt).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
                         })}
                       </p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${stateInfo.color}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${stateInfo.color}`}
+                    >
                       {stateInfo.label}
                     </span>
                   </div>
@@ -124,34 +140,41 @@ function OrdersPage() {
                   <div className="p-6">
                     <div className="divide-y">
                       {order.orderDetails.map((detail, index) => (
-                        <div key={index} className="py-4 flex items-center gap-4 first:pt-0 last:pb-0">
+                        <div
+                          key={index}
+                          className="py-4 flex items-center gap-4 first:pt-0 last:pb-0"
+                        >
                           <img
-                            src={`http://localhost:8080/uploads/${detail.productIllustration}`}
+                            src={`http://127.0.0.1:8080/uploads/${detail.productIllustration}`}
                             alt={detail.productName}
                             className="w-16 h-16 object-cover rounded"
                           />
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 truncate">
                               {detail.productName}
                             </p>
                             <p className="text-gray-500 text-sm">
                               Quantité: {detail.productQuantity}
                             </p>
                           </div>
-                          <p className="font-semibold text-gray-900">
-                            {(detail.productPrice * detail.productQuantity).toFixed(2).replace('.', ',')} €
+                          <p className="font-semibold text-gray-900 whitespace-nowrap">
+                            {(detail.productPrice * detail.productQuantity)
+                              .toFixed(2)
+                              .replace(".", ",")}{" "}
+                            €
                           </p>
                         </div>
                       ))}
                     </div>
 
                     {/* Order footer */}
-                    <div className="mt-4 pt-4 border-t flex items-center justify-between">
+                    <div className="mt-4 pt-4 border-t flex flex-wrap items-center justify-between gap-2">
                       <div className="text-sm text-gray-500">
-                        Livraison: {order.carrierName} ({order.carrierPrice.toFixed(2).replace('.', ',')} €)
+                        Livraison: {order.carrierName} (
+                        {order.carrierPrice.toFixed(2).replace(".", ",")} €)
                       </div>
                       <div className="text-lg font-bold text-gray-900">
-                        Total: {order.total.toFixed(2).replace('.', ',')} €
+                        Total: {order.total.toFixed(2).replace(".", ",")} €
                       </div>
                     </div>
                   </div>
