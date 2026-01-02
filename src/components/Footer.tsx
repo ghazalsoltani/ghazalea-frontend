@@ -1,24 +1,32 @@
 import { Link } from "react-router-dom";
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  // Handler for pages not yet created
+  const handleComingSoon = (e: React.MouseEvent, pageName: string) => {
+    e.preventDefault();
+    alert(`La page "${pageName}" sera bientôt disponible !`);
+  };
+
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gradient-to-br from-gray-950 via-gray-900 to-red-950 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand - Logo clickable */}
-          <div className="col-span-1 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-2">
             <Link
               to="/home"
               className="inline-block mb-4 transition-transform hover:scale-105"
               title="Accueil Ghazaléa"
             >
               <img
-                src="/images/logo1.png"
+                src="/images/logo2.png"
                 alt="Ghazaléa - Accueil"
-                className="h-12 w-auto lg:h-12 object-contain"
+                className="h-12 w-auto object-contain"
               />
             </Link>
-            <p className="text-gray-400 mb-6 max-w-md">
+            <p className="text-gray-400 mb-6 max-w-md leading-relaxed">
               Accessoires de mode artisanaux. Découvrez notre collection de
               sacs, bijoux et lunettes de soleil.
             </p>
@@ -28,7 +36,7 @@ function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors"
+                className="p-3 bg-gray-800/50 rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-300 hover:scale-110"
                 aria-label="Instagram"
               >
                 <svg
@@ -44,7 +52,7 @@ function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors"
+                className="p-3 bg-gray-800/50 rounded-full hover:bg-blue-600 transition-all duration-300 hover:scale-110"
                 aria-label="Facebook"
               >
                 <svg
@@ -55,22 +63,41 @@ function Footer() {
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
+              {/* TikTok */}
+              <a
+                href="https://tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 bg-gray-800/50 rounded-full hover:bg-black transition-all duration-300 hover:scale-110"
+                aria-label="TikTok"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                </svg>
+              </a>
             </div>
           </div>
 
-          {/* Boutique Links */}
+          {/* Boutique Links - All functional */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Boutique</h4>
-            <ul className="space-y-2">
+            <h4 className="text-white font-semibold mb-6 text-lg">Boutique</h4>
+            <ul className="space-y-3">
               <li>
-                <Link to="/home" className="hover:text-white transition-colors">
+                <Link
+                  to="/home"
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block"
+                >
                   Tous les produits
                 </Link>
               </li>
               <li>
                 <Link
                   to="/category/sacs"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block"
                 >
                   Sacs
                 </Link>
@@ -78,7 +105,7 @@ function Footer() {
               <li>
                 <Link
                   to="/category/bijoux"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block"
                 >
                   Bijoux
                 </Link>
@@ -86,7 +113,7 @@ function Footer() {
               <li>
                 <Link
                   to="/category/lunettes"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block"
                 >
                   Lunettes
                 </Link>
@@ -94,79 +121,90 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Info Links */}
+          {/* Info Links - Coming soon pages */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Informations</h4>
-            <ul className="space-y-2">
+            <h4 className="text-white font-semibold mb-6 text-lg">
+              Informations
+            </h4>
+            <ul className="space-y-3">
               <li>
-                <Link
-                  to="/about"
-                  className="hover:text-white transition-colors"
+                <button
+                  onClick={(e) => handleComingSoon(e, "À propos")}
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block cursor-pointer"
                 >
                   À propos
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  to="/contact"
-                  className="hover:text-white transition-colors"
+                <button
+                  onClick={(e) => handleComingSoon(e, "Contact")}
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block cursor-pointer"
                 >
                   Contact
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  to="/livraison"
-                  className="hover:text-white transition-colors"
+                <button
+                  onClick={(e) => handleComingSoon(e, "Livraison")}
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block cursor-pointer"
                 >
                   Livraison
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/cgv" className="hover:text-white transition-colors">
+                <button
+                  onClick={(e) => handleComingSoon(e, "CGV")}
+                  className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-200 inline-block cursor-pointer"
+                >
                   CGV
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">
-            © 2024 Ghazaléa. Tous droits réservés.
+            © {currentYear} Ghazaléa. Tous droits réservés.
           </p>
 
           {/* Payment Icons */}
-          <div className="flex items-center gap-4 mt-4 md:mt-0">
+          <div className="flex items-center gap-3">
             {/* Visa */}
-            <svg className="h-8" viewBox="0 0 50 35" fill="none">
-              <rect width="50" height="35" rx="4" fill="#1A1F71" />
-              <path
-                d="M21.5 23H19L20.5 12H23L21.5 23ZM17.5 12L15 19.5L14.5 17L13.5 12.5C13.5 12.5 13.3 12 12.5 12H8L8 12.2C8 12.2 9 12.4 10 13L12.5 23H15.5L21 12H17.5ZM35 23L37 12H34L32 23H35ZM30 12L27.5 19L27 17L26.5 12.5C26.5 12.5 26.3 12 25.5 12H22L22 12.2C22 12.2 24 12.7 26 14L28 23H31L37 12H30Z"
-                fill="white"
-              />
-            </svg>
+            <div className="bg-white rounded-md p-1.5 hover:scale-110 transition-transform">
+              <svg className="h-6 w-10" viewBox="0 0 50 35" fill="none">
+                <rect width="50" height="35" rx="4" fill="#1A1F71" />
+                <path
+                  d="M21.5 23H19L20.5 12H23L21.5 23ZM17.5 12L15 19.5L14.5 17L13.5 12.5C13.5 12.5 13.3 12 12.5 12H8L8 12.2C8 12.2 9 12.4 10 13L12.5 23H15.5L21 12H17.5ZM35 23L37 12H34L32 23H35ZM30 12L27.5 19L27 17L26.5 12.5C26.5 12.5 26.3 12 25.5 12H22L22 12.2C22 12.2 24 12.7 26 14L28 23H31L37 12H30Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
 
             {/* Mastercard */}
-            <svg className="h-8" viewBox="0 0 50 35" fill="none">
-              <rect width="50" height="35" rx="4" fill="#F5F5F5" />
-              <circle cx="20" cy="17.5" r="10" fill="#EB001B" />
-              <circle cx="30" cy="17.5" r="10" fill="#F79E1B" />
-              <path
-                d="M25 10.5C27.5 12.5 29 15 29 17.5C29 20 27.5 22.5 25 24.5C22.5 22.5 21 20 21 17.5C21 15 22.5 12.5 25 10.5Z"
-                fill="#FF5F00"
-              />
-            </svg>
+            <div className="bg-white rounded-md p-1.5 hover:scale-110 transition-transform">
+              <svg className="h-6 w-10" viewBox="0 0 50 35" fill="none">
+                <rect width="50" height="35" rx="4" fill="#F5F5F5" />
+                <circle cx="20" cy="17.5" r="10" fill="#EB001B" />
+                <circle cx="30" cy="17.5" r="10" fill="#F79E1B" />
+                <path
+                  d="M25 10.5C27.5 12.5 29 15 29 17.5C29 20 27.5 22.5 25 24.5C22.5 22.5 21 20 21 17.5C21 15 22.5 12.5 25 10.5Z"
+                  fill="#FF5F00"
+                />
+              </svg>
+            </div>
 
             {/* Stripe */}
-            <svg className="h-8" viewBox="0 0 50 35" fill="none">
-              <rect width="50" height="35" rx="4" fill="#635BFF" />
-              <path
-                d="M25 11C21 11 18 12.5 18 15C18 19 25 18.5 25 20.5C25 21.2 24 21.5 23 21.5C21 21.5 19.5 20.5 19.5 20.5L18.5 23C18.5 23 20.5 24 23 24C27 24 30 22.5 30 19.5C30 15.5 23 16 23 14C23 13.5 24 13 25 13C26.5 13 28 13.5 28 13.5L29 11C29 11 27.5 11 25 11Z"
-                fill="white"
-              />
-            </svg>
+            <div className="bg-white rounded-md p-1.5 hover:scale-110 transition-transform">
+              <svg className="h-6 w-10" viewBox="0 0 50 35" fill="none">
+                <rect width="50" height="35" rx="4" fill="#635BFF" />
+                <path
+                  d="M25 11C21 11 18 12.5 18 15C18 19 25 18.5 25 20.5C25 21.2 24 21.5 23 21.5C21 21.5 19.5 20.5 19.5 20.5L18.5 23C18.5 23 20.5 24 23 24C27 24 30 22.5 30 19.5C30 15.5 23 16 23 14C23 13.5 24 13 25 13C26.5 13 28 13.5 28 13.5L29 11C29 11 27.5 11 25 11Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Product, Category } from "../types";
 import { api } from "../services/api";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
 import Navbar from "../components/Navbar";
 
 function ProductDetail() {
@@ -14,13 +15,16 @@ function ProductDetail() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [inWishlist, setInWishlist] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
 
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // Fetch product, categories, and wishlist status
+  // Check wishlist status from context (instant!)
+  const inWishlist = product ? isInWishlist(product.id) : false;
+
+  // Fetch product and categories
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return;
@@ -35,16 +39,6 @@ function ProductDetail() {
 
         setProduct(productData);
         setCategories(categoriesData);
-
-        // Check wishlist status if authenticated
-        if (isAuthenticated) {
-          try {
-            const wishlistStatus = await api.checkWishlist(parseInt(id));
-            setInWishlist(wishlistStatus.inWishlist);
-          } catch (err) {
-            console.error("Error checking wishlist:", err);
-          }
-        }
       } catch (err) {
         setError("Produit non trouvé");
         console.error("Error fetching product:", err);
@@ -54,7 +48,7 @@ function ProductDetail() {
     };
 
     fetchData();
-  }, [id, isAuthenticated]);
+  }, [id]);
 
   const priceWithTax = product ? product.price * (1 + product.tva / 100) : 0;
 
@@ -66,30 +60,22 @@ function ProductDetail() {
     }
   };
 
-  // Toggle wishlist and optimistic update
+  // Toggle wishlist
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
 
-    if (!product || wishlistLoading) return;
+    if (!product || isToggling) return;
 
-    const previousState = inWishlist;
-    setInWishlist(!inWishlist);
-    setWishlistLoading(true);
-
+    setIsToggling(true);
     try {
-      if (previousState) {
-        await api.removeFromWishlist(product.id);
-      } else {
-        await api.addToWishlist(product.id);
-      }
+      await toggleWishlist(product.id);
     } catch (err) {
-      setInWishlist(previousState);
       console.error("Error toggling wishlist:", err);
     } finally {
-      setWishlistLoading(false);
+      setIsToggling(false);
     }
   };
 
@@ -215,12 +201,12 @@ function ProductDetail() {
               <button
                 type="button"
                 onClick={handleWishlistToggle}
-                disabled={wishlistLoading}
+                disabled={isToggling}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   inWishlist
                     ? "bg-red-50 border-red-300 text-red-500"
                     : "bg-white border-gray-300 text-gray-400 hover:border-red-300 hover:text-red-500"
-                } ${wishlistLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
                 title={
                   inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"
                 }

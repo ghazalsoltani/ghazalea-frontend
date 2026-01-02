@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
   // Form state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   // Error and loading state
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Get login function from AuthContext
   const { login } = useAuth();
-  
+
   // Hook for navigation after successful login
   const navigate = useNavigate();
 
@@ -21,30 +21,30 @@ function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     // Prevent default form submission (page reload)
     e.preventDefault();
-    
+
     // Clear previous errors
     setError(null);
-    
+
     // Validate inputs
     if (!email || !password) {
-      setError('Veuillez remplir tous les champs');
+      setError("Veuillez remplir tous les champs");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Call login function from AuthContext
       const success = await login(email, password);
-      
+
       if (success) {
         // Redirect to home page after successful login
-        navigate('/');
+        navigate("/");
       } else {
-        setError('Email ou mot de passe incorrect');
+        setError("Email ou mot de passe incorrect");
       }
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.');
+      setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
@@ -56,14 +56,18 @@ function LoginPage() {
         {/* Logo / Title */}
         <Link to="/" className="flex justify-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            🛍️ La Boutique Française
+            <img
+              src="/images/logo.png"
+              alt="Logo"
+              className="h-12 w-auto lg:h-12 object-contain"
+            />
           </h1>
         </Link>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
           Connexion
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Pas encore de compte ?{' '}
+          Pas encore de compte ?{" "}
           <Link to="/register" className="text-blue-600 hover:text-blue-500">
             Créer un compte
           </Link>
@@ -83,8 +87,8 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email field */}
             <div>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
                 Adresse email
@@ -104,8 +108,8 @@ function LoginPage() {
 
             {/* Password field */}
             <div>
-              <label 
-                htmlFor="password" 
+              <label
+                htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
                 Mot de passe
@@ -129,20 +133,21 @@ function LoginPage() {
                 type="submit"
                 disabled={isSubmitting}
                 className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-                  ${isSubmitting 
-                    ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                  ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   }`}
               >
-                {isSubmitting ? 'Connexion en cours...' : 'Se connecter'}
+                {isSubmitting ? "Connexion en cours..." : "Se connecter"}
               </button>
             </div>
           </form>
 
           {/* Forgot password link */}
           <div className="mt-6 text-center">
-            <Link 
-              to="/forgot-password" 
+            <Link
+              to="/forgot-password"
               className="text-sm text-blue-600 hover:text-blue-500"
             >
               Mot de passe oublié ?

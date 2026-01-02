@@ -1,31 +1,62 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Product } from "../types";
-import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
 
 interface ProductCardProps {
   readonly product: Product;
-  readonly onAddToCart: (product: Product) => void;
+  readonly onAddToCart?: (product: Product) => void;
 }
 
-function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const { items } = useCart();
+function ProductCard({ product }: ProductCardProps) {
+  const [isToggling, setIsToggling] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
+
   const priceWithTax = product.price * (1 + product.tva / 100);
-  const imageUrl = `http://localhost:8080/uploads/${product.illustration}`;
+  const imageUrl = `http://127.0.0.1:8080/uploads/${product.illustration}`;
 
-  // Check if product is in cart and get quantity
-  const cartItem = items.find((item) => item.product.id === product.id);
-  const quantityInCart = cartItem ? cartItem.quantity : 0;
+  // Check wishlist status from context (instant, no API call!)
+  const inWishlist = isInWishlist(product.id);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  // Strip HTML tags and get plain text description
+  const plainDescription = product.description
+    ? product.description.replace(/<[^>]*>/g, "").trim()
+    : "";
+
+  // Get short description (first ~80 characters)
+  const shortDescription =
+    plainDescription.length > 80
+      ? plainDescription.substring(0, 80).trim() + "..."
+      : plainDescription;
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToCart(product);
+
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (isToggling) return;
+
+    setIsToggling(true);
+    try {
+      await toggleWishlist(product.id);
+    } catch (err) {
+      console.error("Error toggling wishlist:", err);
+    } finally {
+      setIsToggling(false);
+    }
   };
 
   return (
-    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-      {/* Image Container */}
+    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+      {/* Image Container - Clickable */}
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
@@ -55,45 +86,45 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-4">
-        {/* Category */}
-        <Link
-          to={`/category/${
-            product.category.slug || product.category.name.toLowerCase()
-          }`}
-          className="text-xs text-blue-600 font-medium uppercase tracking-wide hover:text-blue-800"
-        >
-          {product.category.name}
-        </Link>
-
         {/* Product Name - Clickable */}
         <Link to={`/product/${product.id}`}>
-          <h3 className="mt-1 text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
+          <h3 className="text-base font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 mb-2">
             {product.name}
           </h3>
         </Link>
 
-        {/* Price */}
-        <Link to={`/product/${product.id}`}>
-          <p className="mt-2 text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-            {priceWithTax.toFixed(2).replace(".", ",")} €
-          </p>
-        </Link>
+        {/* Short Description */}
+        {shortDescription && (
+          <Link to={`/product/${product.id}`}>
+            <p className="text-sm text-gray-700 line-clamp-1 hover:text-gray-700 transition-colors">
+              {shortDescription}
+            </p>
+          </Link>
+        )}
 
-        {/* Add to Cart Button with Cart Icon */}
-        <div className="mt-4 flex items-center gap-2">
+        {/* Price + Heart */}
+        <div className="flex items-center justify-between mt-2">
+          <Link to={`/product/${product.id}`}>
+            <p className="text-lg font-bold text-gray-800 hover:text-blue-600 transition-colors">
+              {priceWithTax.toFixed(2).replace(".", ",")} €
+            </p>
+          </Link>
+
+          {/* Heart Button */}
           <button
             type="button"
-            onClick={handleAddToCart}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium transition-all duration-200 ${
-              quantityInCart > 0
-                ? "bg-green-600 text-white hover:bg-green-700"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }`}
+            onClick={handleWishlistToggle}
+            disabled={isToggling}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              inWishlist
+                ? "text-red-500 bg-red-50 hover:bg-red-100"
+                : "text-gray-400 bg-gray-50 hover:bg-gray-100 hover:text-red-400"
+            } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
+            title={inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"}
           >
-            {/* Cart Icon */}
             <svg
               className="w-5 h-5"
-              fill="none"
+              fill={inWishlist ? "currentColor" : "none"}
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
@@ -101,45 +132,10 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               />
             </svg>
-
-            {quantityInCart > 0 ? (
-              <span>Dans le panier ({quantityInCart})</span>
-            ) : (
-              <span>Ajouter au panier</span>
-            )}
           </button>
-
-          {/* Quantity badge button - if in cart */}
-          {quantityInCart > 0 && (
-            <Link
-              to="/cart"
-              className="p-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              title="Voir le panier"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </Link>
-          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Category, Product } from "../types";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { api } from "../services/api";
 import Navbar from "../components/Navbar";
 
@@ -12,6 +13,7 @@ function FavoritesPage() {
   const [error, setError] = useState<string | null>(null);
 
   const { addToCart } = useCart();
+  const { removeFromWishlist, refreshWishlist } = useWishlist();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +47,9 @@ function FavoritesPage() {
 
   const handleRemoveFromWishlist = async (productId: number) => {
     try {
-      await api.removeFromWishlist(productId);
+      // Update context (optimistic + API call)
+      await removeFromWishlist(productId);
+      // Update local state
       setFavorites(favorites.filter((p) => p.id !== productId));
     } catch (err) {
       console.error("Error removing from wishlist:", err);

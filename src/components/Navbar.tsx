@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Category } from "../types";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext";
 
 interface NavbarProps {
   readonly categories?: Category[];
@@ -17,6 +18,7 @@ export default function Navbar({
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const { totalItems } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
+  const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
 
   const handleCategoryClick = (category: Category | null) => {
@@ -63,7 +65,7 @@ export default function Navbar({
             ))}
           </div>
 
-          {/* Right Section: Auth + Cart + Mobile Button */}
+          {/* Right Section: Auth + Favorites + Cart + Mobile Button */}
           <div className="flex items-center space-x-2">
             {/* Auth */}
             {isAuthenticated ? (
@@ -110,6 +112,11 @@ export default function Navbar({
                         onClick={() => setAccountMenuOpen(false)}
                       >
                         Favoris
+                        {wishlistCount > 0 && (
+                          <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                            {wishlistCount}
+                          </span>
+                        )}
                       </Link>
                       <Link
                         to="/orders"
@@ -149,10 +156,37 @@ export default function Navbar({
               </div>
             )}
 
+            {/* Favorites Heart Icon with Badge */}
+            <Link
+              to="/favorites"
+              className="relative p-2 text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+              title="Mes favoris"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
             {/* Cart */}
             <Link
               to="/cart"
               className="relative p-2 text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 rounded-lg transition-all"
+              title="Mon panier"
             >
               <svg
                 className="w-6 h-6"
@@ -248,10 +282,15 @@ export default function Navbar({
                   </Link>
                   <Link
                     to="/favorites"
-                    className="block px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100"
+                    className="flex items-center justify-between px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Favoris
+                    <span>Favoris</span>
+                    {wishlistCount > 0 && (
+                      <span className="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {wishlistCount}
+                      </span>
+                    )}
                   </Link>
                   <Link
                     to="/orders"
