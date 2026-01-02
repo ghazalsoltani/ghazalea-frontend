@@ -21,7 +21,7 @@ function Footer() {
               title="Accueil Ghazaléa"
             >
               <img
-                src="/images/logo2.png"
+                src="/images/logo.png"
                 alt="Ghazaléa - Accueil"
                 className="h-12 w-auto object-contain"
               />

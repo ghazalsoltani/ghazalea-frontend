@@ -5,11 +5,13 @@ import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
-import CategorySection from "../components/CategorySection";
+import CategoryShowcase from "../components/CategoryShowcase";
 import TrustBadges from "../components/TrustBadges";
+import StorytellingSection from "../components/StorytellingSection";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
+import BoutiqueSection from "../components/Boutiquesection";
 
 function Home() {
   // Get category slug from URL
@@ -59,9 +61,9 @@ function Home() {
   // Filter products when slug or products change
   useEffect(() => {
     if (slug && categories.length > 0) {
-      // Find categry by slug
+      // Find category by slug
       const category = categories.find(
-        (c) => c.slug.toLocaleLowerCase() === slug.toLocaleLowerCase()
+        (c) => c.slug.toLowerCase() === slug.toLowerCase()
       );
       if (category) {
         setSelectedCategory(category);
@@ -70,12 +72,12 @@ function Home() {
         );
         setFilteredProducts(filtered);
       } else {
-        // Invalid slug and show all products
+        // Invalid slug, show all products
         setSelectedCategory(null);
         setFilteredProducts(products);
       }
     } else {
-      // if no slug show all products
+      // No slug, show all products
       setSelectedCategory(null);
       setFilteredProducts(products);
     }
@@ -98,10 +100,15 @@ function Home() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+          <div className="w-12 h-12 border border-gray-300 border-t-gray-800 rounded-full animate-spin mx-auto"></div>
+          <p
+            className="mt-6 text-gray-500 text-sm uppercase tracking-[0.2em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Chargement
+          </p>
         </div>
       </div>
     );
@@ -110,13 +117,13 @@ function Home() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <p className="text-xl text-red-600">{error}</p>
+          <p className="text-xl text-gray-600 mb-4">{error}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+            className="px-6 py-2 border border-gray-800 text-gray-800 text-sm uppercase tracking-[0.1em] hover:bg-gray-800 hover:text-white transition-colors"
           >
             Réessayer
           </button>
@@ -129,82 +136,105 @@ function Home() {
   const isMainPage = selectedCategory === null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Navigation Bar */}
       <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
 
-      {/* Hero Section - only on main page */}
+      {/* ===== MAIN PAGE (Homepage) ===== */}
       {isMainPage ? (
-        <HeroSection />
+        <>
+          {/* 1. Hero Section - L'Inspiration */}
+          <HeroSection />
+
+          {/* 2. Trust Badges - La Réassurance */}
+          <TrustBadges />
+
+          {/* 3. Category Showcase - L'Orientation */}
+          <CategoryShowcase
+            categories={categories}
+            products={products}
+            onCategoryClick={handleCategoryClick}
+          />
+
+          {/* 4. Storytelling Section - La Conviction */}
+          <StorytellingSection />
+
+          {/* 5. Boutique Section - L'Ancrage / La Preuve */}
+          <BoutiqueSection />
+
+          {/* 6. Newsletter */}
+          <Newsletter />
+        </>
       ) : (
-        <div className="bg-gradient-to-r from-gray-900 to-gray-700 text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-              {selectedCategory.name}
-            </h1>
-            <p className="text-xl text-gray-300">
-              Découvrez notre collection de{" "}
-              {selectedCategory.name.toLowerCase()}
-            </p>
-          </div>
-        </div>
-      )}
+        <>
+          {/* ===== CATEGORY PAGE ===== */}
 
-      {/* Trust Badges */}
-      <TrustBadges />
-
-      {/* Category Section - only on main page */}
-      {isMainPage && (
-        <CategorySection
-          categories={categories}
-          onCategoryClick={handleCategoryClick}
-        />
-      )}
-
-      {/* Products Section */}
-      <section className="flex-1 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
-              {selectedCategory ? selectedCategory.name : "Tous nos produits"}
-            </h2>
-            <span className="text-gray-500">
-              {filteredProducts.length} produit
-              {filteredProducts.length > 1 ? "s" : ""}
-            </span>
-          </div>
-
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-xl text-gray-500">
-                Aucun produit dans cette catégorie pour le moment.
-              </p>
-              <button
-                type="button"
-                onClick={() => handleCategoryClick(null)}
-                className="mt-4 px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
+          {/* Category Header */}
+          <div className="bg-white py-16 border-b border-gray-100">
+            <div className="max-w-7xl mx-auto px-4 text-center">
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl text-gray-800 mb-4 tracking-[0.1em] uppercase"
+                style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontWeight: 400,
+                }}
               >
-                Voir tous les produits
-              </button>
+                {selectedCategory.name}
+              </h1>
+              <p className="text-gray-500">
+                Découvrez notre collection de{" "}
+                {selectedCategory.name.toLowerCase()}
+              </p>
             </div>
-          )}
-        </div>
-      </section>
+          </div>
 
-      {/* Newsletter Section */}
-      <Newsletter />
+          {/* Trust Badges */}
+          <TrustBadges />
 
-      {/* Footer */}
+          {/* Products Grid */}
+          <section className="flex-1 py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+              {/* Product Count */}
+              <div className="text-center mb-12">
+                <p className="text-sm text-gray-500">
+                  {filteredProducts.length} produit
+                  {filteredProducts.length > 1 ? "s" : ""}
+                </p>
+              </div>
+
+              {filteredProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <p className="text-gray-500 mb-6">
+                    Aucun produit dans cette catégorie pour le moment.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleCategoryClick(null)}
+                    className="px-8 py-3 border border-gray-800 text-gray-800 text-sm uppercase tracking-[0.1em] hover:bg-gray-800 hover:text-white transition-colors"
+                  >
+                    Retour à l'accueil
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Newsletter */}
+          <Newsletter />
+        </>
+      )}
+
+      {/* 7. Footer */}
       <Footer />
     </div>
   );
