@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
-import { useCheckout } from '../../context/CheckoutContext';
-import { api } from '../../services/api';
-import CheckoutSteps from '../../components/CheckoutSteps';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
+import { useCheckout } from "../../context/CheckoutContext";
+import { api } from "../../services/api";
+import CheckoutSteps from "../../components/CheckoutSteps";
 
 function SummaryStep() {
   const [loading, setLoading] = useState(false);
@@ -13,20 +13,16 @@ function SummaryStep() {
   const { items, totalPrice } = useCart();
   const { state } = useCheckout();
 
-  // Redirect if previous steps not completed
   if (!state.selectedAddress || !state.selectedCarrier) {
-    navigate('/checkout/address');
+    navigate("/checkout/address");
     return null;
   }
 
   const { selectedAddress, selectedCarrier } = state;
-
-  // Calculate totals
   const subtotal = totalPrice;
   const shipping = selectedCarrier.price;
   const total = subtotal + shipping;
 
-  // Handle payment with Stripe
   const handlePayment = async () => {
     setLoading(true);
     setError(null);
@@ -35,46 +31,70 @@ function SummaryStep() {
       const orderData = {
         addressId: selectedAddress.id,
         carrierId: selectedCarrier.id,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
         })),
       };
 
-      // Create checkout session and get Stripe URL
       const result = await api.createCheckoutSession(orderData);
 
       if (result.success && result.checkoutUrl) {
-        // Redirect to Stripe Checkout page
         window.location.href = result.checkoutUrl;
       } else {
-        setError('Erreur lors de la création de la session de paiement');
+        setError("Erreur lors de la création de la session de paiement");
       }
     } catch (err) {
-      console.error('Payment error:', err);
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      console.error("Payment error:", err);
+      setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle go back
   const handleBack = () => {
-    navigate('/checkout/carrier');
+    navigate("/checkout/carrier");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Steps indicator */}
+    <div className="min-h-screen bg-[#faf8f5]">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <button
+            onClick={handleBack}
+            className="text-gray-500 hover:text-[#c5a880] flex items-center text-sm transition-colors"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Retour à la livraison
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-10">
         <CheckoutSteps currentStep="summary" />
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Récapitulatif de commande
+        <h1
+          className="text-2xl md:text-3xl text-gray-800 mb-8 text-center"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          Récapitulatif
         </h1>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm text-center">
             {error}
           </div>
         )}
@@ -83,89 +103,114 @@ function SummaryStep() {
           {/* Left column - Order details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Delivery address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2
+                  className="text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
                   Adresse de livraison
                 </h2>
                 <button
                   type="button"
-                  onClick={() => navigate('/checkout/address')}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
+                  onClick={() => navigate("/checkout/address")}
+                  className="text-[#c5a880] hover:text-[#b8956d] text-sm transition-colors"
                 >
                   Modifier
                 </button>
               </div>
-              <div className="text-gray-600">
-                <p className="font-semibold text-gray-900">
+              <div className="text-sm">
+                <p className="text-gray-800 mb-1">
                   {selectedAddress.firstname} {selectedAddress.lastname}
                 </p>
-                <p>{selectedAddress.address}</p>
-                <p>{selectedAddress.postal} {selectedAddress.city}</p>
-                <p>{selectedAddress.country}</p>
-                <p className="mt-2 text-sm">{selectedAddress.phone}</p>
+                <p className="text-gray-500">{selectedAddress.address}</p>
+                <p className="text-gray-500">
+                  {selectedAddress.postal} {selectedAddress.city},{" "}
+                  {selectedAddress.country}
+                </p>
+                <p className="text-gray-400 mt-2">{selectedAddress.phone}</p>
               </div>
             </div>
 
             {/* Carrier */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2
+                  className="text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
                   Mode de livraison
                 </h2>
                 <button
                   type="button"
-                  onClick={() => navigate('/checkout/carrier')}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
+                  onClick={() => navigate("/checkout/carrier")}
+                  className="text-[#c5a880] hover:text-[#b8956d] text-sm transition-colors"
                 >
                   Modifier
                 </button>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-gray-900">{selectedCarrier.name}</p>
-                  <p className="text-gray-600 text-sm">{selectedCarrier.description}</p>
+                  <p className="text-gray-800">{selectedCarrier.name}</p>
+                  <p className="text-gray-500 text-sm">
+                    {selectedCarrier.description}
+                  </p>
                 </div>
-                <p className="font-bold">
+                <p className="text-gray-800">
                   {selectedCarrier.price === 0
-                    ? 'Gratuit'
-                    : `${selectedCarrier.price.toFixed(2).replace('.', ',')} €`
-                  }
+                    ? "Gratuit"
+                    : `${selectedCarrier.price.toFixed(2).replace(".", ",")} €`}
                 </p>
               </div>
             </div>
 
             {/* Products */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2
+                  className="text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
                   Articles ({items.length})
                 </h2>
                 <button
                   type="button"
-                  onClick={() => navigate('/cart')}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
+                  onClick={() => navigate("/cart")}
+                  className="text-[#c5a880] hover:text-[#b8956d] text-sm transition-colors"
                 >
                   Modifier
                 </button>
               </div>
 
-              <div className="divide-y">
-                {items.map(item => {
-                  const itemPrice = item.product.price * (1 + item.product.tva / 100);
+              <div className="divide-y divide-gray-100">
+                {items.map((item) => {
+                  const itemPrice =
+                    item.product.price * (1 + item.product.tva / 100);
                   return (
-                    <div key={item.product.id} className="py-4 flex items-center gap-4">
-                      <img
-                        src={`http://localhost:8080/uploads/${item.product.illustration}`}
-                        alt={item.product.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{item.product.name}</p>
-                        <p className="text-gray-500 text-sm">Quantité: {item.quantity}</p>
+                    <div
+                      key={item.product.id}
+                      className="py-4 flex items-center gap-4 first:pt-0 last:pb-0"
+                    >
+                      <div className="w-16 h-16 bg-gray-50 flex-shrink-0">
+                        <img
+                          src={`http://localhost:8080/uploads/${item.product.illustration}`}
+                          alt={item.product.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <p className="font-bold text-gray-900">
-                        {(itemPrice * item.quantity).toFixed(2).replace('.', ',')} €
+                      <div className="flex-1 min-w-0">
+                        <p className="text-gray-800 text-sm truncate">
+                          {item.product.name}
+                        </p>
+                        <p className="text-gray-400 text-xs">
+                          Qté: {item.quantity}
+                        </p>
+                      </div>
+                      <p className="text-gray-800 text-sm">
+                        {(itemPrice * item.quantity)
+                          .toFixed(2)
+                          .replace(".", ",")}{" "}
+                        €
                       </p>
                     </div>
                   );
@@ -176,80 +221,104 @@ function SummaryStep() {
 
           {/* Right column - Order total */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white p-6 sticky top-8">
+              <h2
+                className="text-gray-800 mb-6 pb-4 border-b border-gray-100"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
                 Total
               </h2>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Sous-total</span>
-                  <span>{subtotal.toFixed(2).replace('.', ',')} €</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Livraison</span>
-                  <span>
-                    {shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2).replace('.', ',')} €`}
+                  <span className="text-gray-500">Sous-total</span>
+                  <span className="text-gray-800">
+                    {subtotal.toFixed(2).replace(".", ",")} €
                   </span>
                 </div>
-                <div className="border-t pt-3 flex justify-between font-bold text-lg">
-                  <span>Total TTC</span>
-                  <span>{total.toFixed(2).replace('.', ',')} €</span>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Livraison</span>
+                  <span className="text-gray-800">
+                    {shipping === 0
+                      ? "Gratuit"
+                      : `${shipping.toFixed(2).replace(".", ",")} €`}
+                  </span>
+                </div>
+                <div className="border-t border-gray-100 pt-4 flex justify-between">
+                  <span
+                    className="text-gray-800"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  >
+                    Total TTC
+                  </span>
+                  <span
+                    className="text-lg text-gray-800"
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                  >
+                    {total.toFixed(2).replace(".", ",")} €
+                  </span>
                 </div>
               </div>
 
-              {/* Stripe payment button */}
+              {/* Payment button */}
               <button
                 type="button"
                 onClick={handlePayment}
                 disabled={loading}
-                className={`
-                  w-full mt-6 py-4 rounded-lg font-semibold text-white transition-colors
-                  flex items-center justify-center gap-2
-                  ${loading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700'
-                  }
-                `}
+                className={`w-full mt-6 py-4 text-sm uppercase tracking-[0.15em] transition-colors flex items-center justify-center gap-2 ${
+                  loading
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-[#2c3e50] text-white hover:bg-[#34495e]"
+                }`}
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Redirection vers le paiement...
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-full animate-spin"></div>
+                    Redirection...
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
                     </svg>
-                    Payer {total.toFixed(2).replace('.', ',')} €
+                    Payer {total.toFixed(2).replace(".", ",")} €
                   </>
                 )}
               </button>
 
               {/* Stripe badge */}
-              <div className="mt-4 flex items-center justify-center gap-2 text-gray-500 text-xs">
-                <svg className="w-8 h-8" viewBox="0 0 60 25" fill="currentColor">
-                  <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a10.8 10.8 0 01-4.56 1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.02 1.04-.06 1.58zm-6.06-5.7c-1.08 0-2.03.76-2.21 2.56h4.36c-.04-1.67-.9-2.56-2.15-2.56zM43.24 20.3V5.5l4.14-.88v15.68h-4.14zm-6.09 0V5.5l4.14-.88v15.68h-4.14zm-4.46-5.28c0 1.95-1.6 3.17-4.1 3.17-1.88 0-3.47-.62-4.58-1.49l1.46-2.93c.87.62 2.1 1.2 3.34 1.2.76 0 1.17-.25 1.17-.67 0-1.33-5.72-.73-5.72-5.04 0-2.16 1.71-3.79 4.58-3.79 1.46 0 2.85.33 4 .95l-1.36 2.93c-.76-.49-1.77-.87-2.86-.87-.65 0-1.02.22-1.02.6 0 1.2 5.72.57 5.72 5 0-.04 0-.04-.63-.06zM20.72 5.87l4.14-.88v2.28l-4.14.88V5.87zm0 3.28h4.14v11.15h-4.14V9.15zm-4.64 0c.33 0 .62.02.87.07v3.79c-.35-.07-.73-.11-1.13-.11-1.56 0-2.48.78-2.48 2.65v5.6h-4.14V9.15h3.98v1.71c.49-1.24 1.6-1.82 2.9-1.71zM4.26 14.66c0-4.9 3.18-9.52 8.7-9.52.84 0 1.62.11 2.32.31l-.95 3.52c-.35-.13-.73-.2-1.17-.2-2.48 0-4.2 2.21-4.2 5.28v6.25H4.26v-5.64z" />
-                </svg>
-                <span>Paiement sécurisé par Stripe</span>
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                  <span>Paiement sécurisé par Stripe</span>
+                </div>
               </div>
-
-              <p className="text-xs text-gray-500 text-center mt-4">
-                En cliquant sur "Payer", vous serez redirigé vers la page de paiement sécurisée Stripe
-              </p>
             </div>
           </div>
         </div>
-
-        {/* Back button */}
-        <button
-          type="button"
-          onClick={handleBack}
-          className="mt-6 text-gray-600 hover:text-gray-900"
-        >
-          ← Retour au choix de livraison
-        </button>
       </div>
     </div>
   );

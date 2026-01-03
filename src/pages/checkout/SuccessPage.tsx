@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { api } from '../../services/api';
-import { useCart } from '../../context/CartContext';
-import { useCheckout } from '../../context/CheckoutContext';
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { api } from "../../services/api";
+import { useCart } from "../../context/CartContext";
+import { useCheckout } from "../../context/CheckoutContext";
 
 function SuccessPage() {
   const [searchParams] = useSearchParams();
@@ -16,10 +16,10 @@ function SuccessPage() {
 
   useEffect(() => {
     const verifyPayment = async () => {
-      const sessionId = searchParams.get('session_id');
+      const sessionId = searchParams.get("session_id");
 
       if (!sessionId) {
-        setError('Session de paiement non trouvée');
+        setError("Session de paiement non trouvée");
         setLoading(false);
         return;
       }
@@ -30,15 +30,14 @@ function SuccessPage() {
         if (result.success && result.paid) {
           setVerified(true);
           setOrderId(result.orderId || null);
-          // Clear cart and reset checkout after successful payment
           clearCart();
           resetCheckout();
         } else {
-          setError('Le paiement n\'a pas été confirmé');
+          setError("Le paiement n'a pas été confirmé");
         }
       } catch (err) {
-        console.error('Verification error:', err);
-        setError('Erreur lors de la vérification du paiement');
+        console.error("Verification error:", err);
+        setError("Erreur lors de la vérification du paiement");
       } finally {
         setLoading(false);
       }
@@ -49,10 +48,15 @@ function SuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Vérification du paiement...</p>
+          <div className="w-12 h-12 border border-gray-300 border-t-[#c5a880] rounded-full animate-spin mx-auto"></div>
+          <p
+            className="mt-6 text-gray-500 text-sm uppercase tracking-[0.2em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Vérification du paiement
+          </p>
         </div>
       </div>
     );
@@ -60,18 +64,37 @@ function SuccessPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      <div className="min-h-screen bg-[#faf8f5] py-20">
+        <div className="max-w-lg mx-auto px-4 text-center">
+          {/* Error icon */}
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-8">
+            <svg
+              className="w-10 h-10 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Erreur de paiement</h1>
-          <p className="text-gray-600 mb-8">{error}</p>
+
+          <h1
+            className="text-2xl md:text-3xl text-gray-800 mb-4"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Erreur de paiement
+          </h1>
+          <p className="text-gray-500 mb-10">{error}</p>
+
           <Link
             to="/cart"
-            className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+            className="inline-block px-10 py-4 bg-[#2c3e50] text-white text-sm uppercase tracking-[0.15em] hover:bg-[#34495e] transition-colors"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Retour au panier
           </Link>
@@ -81,12 +104,12 @@ function SuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-2xl mx-auto px-4 text-center">
+    <div className="min-h-screen bg-[#faf8f5] py-20">
+      <div className="max-w-lg mx-auto px-4 text-center">
         {/* Success icon */}
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8">
           <svg
-            className="w-10 h-10 text-green-600"
+            className="w-10 h-10 text-green-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -94,49 +117,105 @@ function SuccessPage() {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={1.5}
               d="M5 13l4 4L19 7"
             />
           </svg>
         </div>
 
         {/* Success message */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Paiement réussi !
+        <h1
+          className="text-2xl md:text-3xl text-gray-800 mb-4"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          Paiement réussi
         </h1>
-        <p className="text-gray-600 mb-2">
-          Merci pour votre commande.
-        </p>
+        <p className="text-gray-500 mb-2">Merci pour votre commande.</p>
         {orderId && (
-          <p className="text-gray-600 mb-8">
-            Numéro de commande : <span className="font-semibold">#{orderId}</span>
+          <p className="text-gray-500 mb-10">
+            Commande{" "}
+            <span
+              className="text-gray-800"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              #{orderId}
+            </span>
           </p>
         )}
 
         {/* Info box */}
-        <div className="bg-blue-50 rounded-lg p-6 mb-8 text-left">
-          <h2 className="font-semibold text-blue-900 mb-2">
+        <div className="bg-white p-6 mb-10 text-left">
+          <h2
+            className="text-gray-800 mb-4"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
             Et maintenant ?
           </h2>
-          <ul className="text-blue-800 text-sm space-y-2">
-            <li>✓ Votre paiement a été confirmé</li>
-            <li>• Vous allez recevoir un email de confirmation</li>
-            <li>• Nous préparons votre commande avec soin</li>
-            <li>• Vous recevrez un email avec le numéro de suivi</li>
+          <ul className="text-gray-500 text-sm space-y-3">
+            <li className="flex items-start gap-3">
+              <svg
+                className="w-4 h-4 text-[#c5a880] mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Votre paiement a été confirmé
+            </li>
+            <li className="flex items-start gap-3">
+              <svg
+                className="w-4 h-4 text-[#c5a880] mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              Vous allez recevoir un email de confirmation
+            </li>
+            <li className="flex items-start gap-3">
+              <svg
+                className="w-4 h-4 text-[#c5a880] mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+              Nous préparons votre commande avec soin
+            </li>
           </ul>
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4">
           <Link
             to="/orders"
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="flex-1 py-4 bg-[#2c3e50] text-white text-sm uppercase tracking-[0.15em] hover:bg-[#34495e] transition-colors text-center"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Voir mes commandes
           </Link>
           <Link
-            to="/"
-            className="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            to="/home"
+            className="flex-1 py-4 border border-gray-300 text-gray-600 text-sm uppercase tracking-[0.15em] hover:bg-white transition-colors text-center"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Continuer mes achats
           </Link>

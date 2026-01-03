@@ -6,6 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,27 +17,24 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isToggling, setIsToggling] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // Check wishlist status from context (instant!)
   const inWishlist = product ? isInWishlist(product.id) : false;
 
-  // Fetch product and categories
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return;
 
       try {
         setLoading(true);
-
         const [productData, categoriesData] = await Promise.all([
           api.getProduct(parseInt(id)),
           api.getCategories(),
         ]);
-
         setProduct(productData);
         setCategories(categoriesData);
       } catch (err) {
@@ -60,7 +58,14 @@ function ProductDetail() {
     }
   };
 
-  // Toggle wishlist
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
+  };
+
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
       navigate("/login");
@@ -81,22 +86,36 @@ function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="w-12 h-12 border border-gray-300 border-t-gray-800 rounded-full animate-spin mx-auto"></div>
+          <p
+            className="mt-6 text-gray-500 text-sm uppercase tracking-[0.2em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Chargement
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#faf8f5]">
         <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
-        <div className="flex items-center justify-center py-16">
+        <div className="flex items-center justify-center py-24">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1
+              className="text-2xl text-gray-800 mb-4"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
               Produit non trouvé
             </h1>
-            <Link to="/home" className="text-blue-600 hover:text-blue-800">
+            <Link
+              to="/home"
+              className="text-[#c5a880] hover:text-[#b8956d] transition-colors"
+            >
               ← Retour à l'accueil
             </Link>
           </div>
@@ -109,110 +128,58 @@ function ProductDetail() {
     product.category.slug || product.category.name.toLowerCase();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf8f5] flex flex-col">
       <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
 
-      {/* Back link */}
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <Link
-          to="/home"
-          className="text-gray-600 hover:text-gray-900 flex items-center text-sm"
-        >
-          <svg
-            className="w-4 h-4 mr-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Retour aux produits
-        </Link>
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <nav className="flex items-center gap-2 text-sm text-gray-500">
+            <Link to="/home" className="hover:text-[#c5a880] transition-colors">
+              Accueil
+            </Link>
+            <span className="text-gray-300">—</span>
+            <Link
+              to={`/category/${categorySlug}`}
+              className="hover:text-[#c5a880] transition-colors"
+            >
+              {product.category.name}
+            </Link>
+            <span className="text-gray-300">—</span>
+            <span className="text-gray-800">{product.name}</span>
+          </nav>
+        </div>
       </div>
 
       {/* Product detail */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Left column - Product image */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img
-              src={`http://127.0.0.1:8080/uploads/${product.illustration}`}
-              alt={product.name}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-
-          {/* Right column - Product info */}
-          <div>
-            {/* Breadcrumb */}
-            <nav className="text-sm text-gray-500 mb-4">
-              <Link to="/home" className="hover:text-gray-700">
-                Accueil
-              </Link>
-              <span className="mx-2">›</span>
-              <Link
-                to={`/category/${categorySlug}`}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                {product.category.name}
-              </Link>
-              <span className="mx-2">›</span>
-              <span>{product.name}</span>
-            </nav>
-
-            {/* Product name */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              {product.name}
-            </h1>
-
-            {/* Price */}
-            <p className="text-3xl font-bold text-gray-900 mb-2">
-              {priceWithTax.toFixed(2).replace(".", ",")} €
-            </p>
-
-            {/* Tax info */}
-            <p className="text-sm text-gray-500 mb-6">
-              TVA incluse ({product.tva}%)
-            </p>
-
-            {/* Description */}
-            <div
-              className="prose text-gray-600 mb-8"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
-
-            {/* Buttons container */}
-            <div className="flex gap-3">
-              {/* Add to cart button */}
-              <button
-                type="button"
-                onClick={() => addToCart(product)}
-                className="flex-1 bg-green-600 text-white py-4 px-8 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
-              >
-                Ajouter au panier
-              </button>
-
-              {/* Wishlist button */}
+      <div className="flex-1 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {/* Left column - Product image */}
+            <div className="relative group">
+              <div className="aspect-[4/5] bg-white overflow-hidden">
+                <img
+                  src={`http://127.0.0.1:8080/uploads/${product.illustration}`}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              {/* Wishlist button on image */}
               <button
                 type="button"
                 onClick={handleWishlistToggle}
                 disabled={isToggling}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg ${
                   inWishlist
-                    ? "bg-red-50 border-red-300 text-red-500"
-                    : "bg-white border-gray-300 text-gray-400 hover:border-red-300 hover:text-red-500"
+                    ? "bg-[#c5a880] text-white"
+                    : "bg-white text-gray-400 hover:text-[#c5a880]"
                 } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
                 title={
                   inWishlist ? "Retirer des favoris" : "Ajouter aux favoris"
                 }
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill={inWishlist ? "currentColor" : "none"}
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -220,28 +187,128 @@ function ProductDetail() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                   />
                 </svg>
               </button>
             </div>
 
-            {/* Category badge */}
-            <div className="mt-8 pt-8 border-t">
-              <p className="text-sm text-gray-500">
-                Catégorie:
-                <Link
-                  to={`/category/${categorySlug}`}
-                  className="ml-2 inline-block bg-gray-100 px-3 py-1 rounded-full text-gray-700 hover:bg-gray-200 transition-colors"
-                >
-                  {product.category.name}
-                </Link>
+            {/* Right column - Product info */}
+            <div className="flex flex-col justify-center">
+              {/* Category */}
+              <Link
+                to={`/category/${categorySlug}`}
+                className="text-xs uppercase tracking-[0.2em] text-[#c5a880] mb-4 hover:text-[#b8956d] transition-colors"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {product.category.name}
+              </Link>
+
+              {/* Product name */}
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl text-gray-800 mb-6"
+                style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontWeight: 400,
+                }}
+              >
+                {product.name}
+              </h1>
+
+              {/* Price */}
+              <p
+                className="text-2xl md:text-3xl text-gray-800 mb-2"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {priceWithTax.toFixed(2).replace(".", ",")} €
               </p>
+
+              {/* Tax info */}
+              <p className="text-sm text-gray-400 mb-8">
+                TVA incluse ({product.tva}%)
+              </p>
+
+              {/* Divider */}
+              <div className="w-16 h-[1px] bg-[#c5a880] mb-8" />
+
+              {/* Description */}
+              <div
+                className="prose prose-gray text-gray-600 mb-10 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
+
+              {/* Add to cart button */}
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className={`w-full py-4 text-sm uppercase tracking-[0.2em] transition-all duration-300 ${
+                  addedToCart
+                    ? "bg-green-600 text-white"
+                    : "bg-[#2c3e50] text-white hover:bg-[#34495e]"
+                }`}
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {addedToCart ? "✓ Ajouté au panier" : "Ajouter au panier"}
+              </button>
+
+              {/* Trust indicators */}
+              <div className="mt-10 pt-8 border-t border-gray-200 space-y-4">
+                <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <svg
+                    className="w-5 h-5 text-[#c5a880]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Livraison offerte dès 50€</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <svg
+                    className="w-5 h-5 text-[#c5a880]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Retours gratuits sous 30 jours</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <svg
+                    className="w-5 h-5 text-[#c5a880]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Paiement sécurisé par Stripe</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

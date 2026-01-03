@@ -1,77 +1,70 @@
 import { useEffect, useState } from "react";
 import { Address, AddressFormData } from "../../types";
 import { useCheckout } from "../../context/CheckoutContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../services/api";
 import CheckoutSteps from "../../components/CheckoutSteps";
 
 function AddressStep() {
-    const [addresses, setAddresses] = useState<Address[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState<AddressFormData>({
+    firstname: "",
+    lastname: "",
+    address: "",
+    postal: "",
+    city: "",
+    country: "France",
+    phone: "",
+  });
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-    // State for selected address
-    const [selectedId, setSelectedId] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { setSelectedAddress } = useCheckout();
 
-    // state for new address form
-    const [showForm, setShowForm] = useState(false);
-    const [formData, setFormData] = useState<AddressFormData>({
-        firstname: '',
-        lastname: '',
-        address: '',
-        postal: '',
-        city: '',
-        country: 'France',
-        phone: '',
-    });
-    const [formError, setFormError] = useState<string | null>(null);
-    const [submitting, setSubmitting] = useState(false);
-
-    // hooks
-    const navigate = useNavigate();
-    const { setSelectedAddress } = useCheckout();
-
-    // fetch addresses
-    useEffect(() => {
-        const fetchAddresses = async() => {
-           try { 
-            setLoading(true);
-            const data = await api.getAddresses();
-            setAddresses(data);
-
-            // Auto select first address if exist
-            if (data.length > 0) {
-                setSelectedId(data[0].id);
-            }
-        } catch (err) {
-            setError('Impossible de charger vos addresses');
-            console.error(err);
-        } finally {
-            setLoading(false);
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        setLoading(true);
+        const data = await api.getAddresses();
+        setAddresses(data);
+        if (data.length > 0) {
+          setSelectedId(data[0].id);
         }
+      } catch (err) {
+        setError("Impossible de charger vos adresses");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-
     fetchAddresses();
-}, []);
+  }, []);
 
-// Handle from input changes
-const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-};
-// Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle new address form submission
   const handleSubmitAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
-    // Basic validation
-    const required: (keyof AddressFormData)[] = ['firstname', 'lastname', 'address', 'postal', 'city', 'country', 'phone'];
+    const required: (keyof AddressFormData)[] = [
+      "firstname",
+      "lastname",
+      "address",
+      "postal",
+      "city",
+      "country",
+      "phone",
+    ];
     for (const field of required) {
       if (!formData[field]) {
         setFormError(`Le champ ${field} est requis`);
@@ -82,59 +75,90 @@ const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElem
     setSubmitting(true);
 
     try {
-      const newAddress = await api.createAddress(formData); // Call server (sending from !)
-
-      setAddresses(prev => [...prev, newAddress]);
+      const newAddress = await api.createAddress(formData);
+      setAddresses((prev) => [...prev, newAddress]);
       setSelectedId(newAddress.id);
       setShowForm(false);
-
-      // Reset form
       setFormData({
-        firstname: '',
-        lastname: '',
-        address: '',
-        postal: '',
-        city: '',
-        country: 'France',
-        phone: '',
+        firstname: "",
+        lastname: "",
+        address: "",
+        postal: "",
+        city: "",
+        country: "France",
+        phone: "",
       });
     } catch (err) {
-      setFormError('Erreur lors de la création de l\'adresse');
+      setFormError("Erreur lors de la création de l'adresse");
       console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Handle continue to next step
   const handleContinue = () => {
-    const selected = addresses.find(a => a.id === selectedId);
+    const selected = addresses.find((a) => a.id === selectedId);
     if (selected) {
       setSelectedAddress(selected);
-      navigate('/checkout/carrier');
+      navigate("/checkout/carrier");
     }
   };
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border border-gray-300 border-t-[#2c3e50] rounded-full animate-spin mx-auto"></div>
+          <p
+            className="mt-6 text-gray-500 text-sm uppercase tracking-[0.2em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Chargement
+          </p>
+        </div>
       </div>
     );
   }
- return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4">
-        {/* Steps indicator */}
+
+  return (
+    <div className="min-h-screen bg-[#faf8f5]">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <Link
+            to="/cart"
+            className="text-gray-500 hover:text-[#c5a880] flex items-center text-sm transition-colors"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Retour au panier
+          </Link>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 py-10">
         <CheckoutSteps currentStep="address" />
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <h1
+          className="text-2xl md:text-3xl text-gray-800 mb-8 text-center"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
           Adresse de livraison
         </h1>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm text-center">
             {error}
           </div>
         )}
@@ -142,46 +166,45 @@ const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElem
         {/* Addresses list */}
         {addresses.length > 0 && !showForm && (
           <div className="space-y-4 mb-6">
-            {addresses.map(address => (
+            {addresses.map((address) => (
               <div
                 key={address.id}
                 onClick={() => setSelectedId(address.id)}
-                className={`
-                  p-4 bg-white rounded-lg border-2 cursor-pointer transition-colors
-                  ${selectedId === address.id
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
-                  }
-                `}
+                className={`p-5 bg-white cursor-pointer transition-all ${
+                  selectedId === address.id
+                    ? "ring-2 ring-[#c5a880]"
+                    : "hover:shadow-md"
+                }`}
               >
                 <div className="flex items-start">
-                  {/* Radio indicator */}
                   <div
-                    className={`
-                      w-5 h-5 rounded-full border-2 mr-4 mt-1 flex-shrink-0
-                      flex items-center justify-center
-                      ${selectedId === address.id
-                        ? 'border-blue-600 bg-blue-600'
-                        : 'border-gray-300'
-                      }
-                    `}
+                    className={`w-5 h-5 rounded-full border-2 mr-4 mt-0.5 flex-shrink-0 flex items-center justify-center transition-colors ${
+                      selectedId === address.id
+                        ? "border-[#c5a880] bg-[#c5a880]"
+                        : "border-gray-300"
+                    }`}
                   >
                     {selectedId === address.id && (
                       <div className="w-2 h-2 bg-white rounded-full"></div>
                     )}
                   </div>
 
-                  {/* Address details */}
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900">
+                    <p
+                      className="text-gray-800 mb-1"
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                    >
                       {address.firstname} {address.lastname}
                     </p>
-                    <p className="text-gray-600">{address.address}</p>
-                    <p className="text-gray-600">
-                      {address.postal} {address.city}
+                    <p className="text-gray-500 text-sm">{address.address}</p>
+                    <p className="text-gray-500 text-sm">
+                      {address.postal} {address.city}, {address.country}
                     </p>
-                    <p className="text-gray-600">{address.country}</p>
-                    <p className="text-gray-500 text-sm mt-1">{address.phone}</p>
+                    <p className="text-gray-400 text-sm mt-2">
+                      {address.phone}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -194,7 +217,7 @@ const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElem
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors mb-6"
+            className="w-full p-4 border border-dashed border-gray-300 text-gray-500 hover:border-[#c5a880] hover:text-[#c5a880] transition-colors mb-8 text-sm"
           >
             + Ajouter une nouvelle adresse
           </button>
@@ -202,143 +225,140 @@ const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElem
 
         {/* New address form */}
         {showForm && (
-          <form onSubmit={handleSubmitAddress} className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-white p-6 md:p-8 mb-8">
+            <h2
+              className="text-lg text-gray-800 mb-6"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
               Nouvelle adresse
             </h2>
 
             {formError && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm">
                 {formError}
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Firstname */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Prénom
-                </label>
-                <input
-                  type="text"
-                  name="firstname"
-                  value={formData.firstname}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
+            <form onSubmit={handleSubmitAddress}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Prénom
+                  </label>
+                  <input
+                    type="text"
+                    name="firstname"
+                    value={formData.firstname}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Nom
+                  </label>
+                  <input
+                    type="text"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Adresse
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="123 Rue de la Paix"
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Code postal
+                  </label>
+                  <input
+                    type="text"
+                    name="postal"
+                    value={formData.postal}
+                    onChange={handleInputChange}
+                    placeholder="75001"
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Ville
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="Paris"
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Pays
+                  </label>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors bg-white"
+                  >
+                    <option value="France">France</option>
+                    <option value="Belgique">Belgique</option>
+                    <option value="Suisse">Suisse</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                    Téléphone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="06 12 34 56 78"
+                    className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  />
+                </div>
               </div>
 
-              {/* Lastname */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nom
-                </label>
-                <input
-                  type="text"
-                  name="lastname"
-                  value={formData.lastname}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Address */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Adresse
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="123 Rue de la Paix"
-                />
-              </div>
-
-              {/* Postal code */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Code postal
-                </label>
-                <input
-                  type="text"
-                  name="postal"
-                  value={formData.postal}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="75001"
-                />
-              </div>
-
-              {/* City */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ville
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Paris"
-                />
-              </div>
-
-              {/* Country */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pays
-                </label>
-                <select
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              <div className="flex gap-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors text-sm"
                 >
-                  <option value="France">France</option>
-                  <option value="Belgique">Belgique</option>
-                  <option value="Suisse">Suisse</option>
-                  <option value="Luxembourg">Luxembourg</option>
-                </select>
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 px-4 py-3 bg-[#2c3e50] text-white hover:bg-[#34495e] transition-colors disabled:bg-gray-300 text-sm"
+                >
+                  {submitting ? "Enregistrement..." : "Enregistrer"}
+                </button>
               </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Téléphone
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="06 12 34 56 78"
-                />
-              </div>
-            </div>
-
-            {/* Form buttons */}
-            <div className="flex gap-4 mt-6">
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-              >
-                {submitting ? 'Enregistrement...' : 'Enregistrer'}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
 
         {/* Continue button */}
@@ -346,13 +366,12 @@ const hanleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElem
           type="button"
           onClick={handleContinue}
           disabled={!selectedId}
-          className={`
-            w-full py-4 rounded-lg font-semibold text-white transition-colors
-            ${selectedId
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'bg-gray-300 cursor-not-allowed'
-            }
-          `}
+          className={`w-full py-4 text-sm uppercase tracking-[0.15em] transition-colors ${
+            selectedId
+              ? "bg-[#2c3e50] text-white hover:bg-[#34495e]"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }`}
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Continuer vers la livraison
         </button>

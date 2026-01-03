@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 function StorytellingSection() {
   return (
     <section className="bg-white">
@@ -108,32 +106,6 @@ function StorytellingSection() {
                 <span>Matériaux nobles</span>
               </div>
             </div>
-
-            {/* CTA Button - Minimal Style */}
-            <Link
-              to="/about"
-              className="group inline-flex items-center gap-3 text-gray-800 hover:text-[#c5a880] transition-colors"
-            >
-              <span
-                className="text-sm uppercase tracking-[0.2em] border-b border-gray-800 pb-1 group-hover:border-[#c5a880] transition-colors"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                Découvrir notre histoire
-              </span>
-              <svg
-                className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Link>
           </div>
         </div>
       </div>

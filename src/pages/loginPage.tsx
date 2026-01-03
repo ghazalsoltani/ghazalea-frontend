@@ -3,29 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
-  // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Error and loading state
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get login function from AuthContext
   const { login } = useAuth();
-
-  // Hook for navigation after successful login
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    // Prevent default form submission (page reload)
     e.preventDefault();
-
-    // Clear previous errors
     setError(null);
 
-    // Validate inputs
     if (!email || !password) {
       setError("Veuillez remplir tous les champs");
       return;
@@ -34,11 +23,8 @@ function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      // Call login function from AuthContext
       const success = await login(email, password);
-
       if (success) {
-        // Redirect to home page after successful login
         navigate("/");
       } else {
         setError("Email ou mot de passe incorrect");
@@ -51,98 +37,102 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        {/* Logo / Title */}
-        <Link to="/" className="flex justify-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            <img
-              src="/images/logo.png"
-              alt="Logo"
-              className="h-12 w-auto lg:h-12 object-contain"
-            />
+    <div className="min-h-screen bg-[#faf8f5] flex flex-col">
+      {/* Header */}
+      <div className="py-8 text-center">
+        <Link to="/home">
+          <h1
+            className="text-2xl text-gray-800 tracking-[0.15em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            GHAZALÉA
           </h1>
         </Link>
-        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-          Connexion
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Pas encore de compte ?{" "}
-          <Link to="/register" className="text-blue-600 hover:text-blue-500">
-            Créer un compte
-          </Link>
-        </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-md rounded-lg sm:px-10">
-          {/* Error message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-
-          {/* Login form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+      {/* Form container */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-16">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-10">
+            <h2
+              className="text-3xl text-gray-800 mb-3"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Connexion
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Pas encore de compte ?{" "}
+              <Link
+                to="/register"
+                className="text-[#c5a880] hover:text-[#b8956d] transition-colors"
               >
-                Adresse email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="vous@exemple.com"
-              />
-            </div>
+                Créer un compte
+              </Link>
+            </p>
+          </div>
 
-            {/* Password field */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="••••••••"
-              />
-            </div>
+          <div className="bg-white p-8 md:p-10">
+            {/* Error message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm text-center">
+                {error}
+              </div>
+            )}
 
-            {/* Submit button */}
-            <div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email field */}
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                  Adresse email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  placeholder="vous@exemple.com"
+                />
+              </div>
+
+              {/* Password field */}
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
+                  Mot de passe
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 focus:border-[#c5a880] focus:outline-none transition-colors"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-                  ${
-                    isSubmitting
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  }`}
+                className={`w-full py-4 text-sm uppercase tracking-[0.15em] transition-colors ${
+                  isSubmitting
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-[#2c3e50] text-white hover:bg-[#34495e]"
+                }`}
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 {isSubmitting ? "Connexion en cours..." : "Se connecter"}
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
+
+          {/* Back to home */}
+          <div className="text-center mt-8">
+            <Link
+              to="/home"
+              className="text-gray-400 text-sm hover:text-[#c5a880] transition-colors"
+            >
+              ← Retour à la boutique
+            </Link>
+          </div>
         </div>
       </div>
     </div>

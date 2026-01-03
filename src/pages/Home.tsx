@@ -14,28 +14,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import BoutiqueSection from "../components/Boutiquesection";
 
 function Home() {
-  // Get category slug from URL
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  // Products state
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-
-  // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
 
-  // Get addToCart from context
   const { addToCart } = useCart();
 
-  // Loading and error states
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch products and categories on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,10 +51,8 @@ function Home() {
     fetchData();
   }, []);
 
-  // Filter products when slug or products change
   useEffect(() => {
     if (slug && categories.length > 0) {
-      // Find category by slug
       const category = categories.find(
         (c) => c.slug.toLowerCase() === slug.toLowerCase()
       );
@@ -72,18 +63,15 @@ function Home() {
         );
         setFilteredProducts(filtered);
       } else {
-        // Invalid slug, show all products
         setSelectedCategory(null);
         setFilteredProducts(products);
       }
     } else {
-      // No slug, show all products
       setSelectedCategory(null);
       setFilteredProducts(products);
     }
   }, [slug, products, categories]);
 
-  // Handle category click, navigate to category URL
   const handleCategoryClick = (category: Category | null) => {
     if (category === null) {
       navigate("/home");
@@ -92,12 +80,10 @@ function Home() {
     }
   };
 
-  // Handle add to cart
   const handleAddToCart = (product: Product) => {
     addToCart(product);
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -114,7 +100,6 @@ function Home() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -132,48 +117,35 @@ function Home() {
     );
   }
 
-  // Check if we're on the main page (no category selected)
   const isMainPage = selectedCategory === null;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Navigation Bar */}
       <Navbar categories={categories} onCategoryClick={handleCategoryClick} />
 
       {/* ===== MAIN PAGE (Homepage) ===== */}
       {isMainPage ? (
         <>
-          {/* 1. Hero Section - L'Inspiration */}
           <HeroSection />
-
-          {/* 2. Trust Badges - La Réassurance */}
           <TrustBadges />
-
-          {/* 3. Category Showcase - L'Orientation */}
           <CategoryShowcase
             categories={categories}
             products={products}
             onCategoryClick={handleCategoryClick}
           />
-
-          {/* 4. Storytelling Section - La Conviction */}
           <StorytellingSection />
-
-          {/* 5. Boutique Section - L'Ancrage / La Preuve */}
           <BoutiqueSection />
-
-          {/* 6. Newsletter */}
           <Newsletter />
         </>
       ) : (
         <>
-          {/* ===== CATEGORY PAGE ===== */}
+          {/* ===== CATEGORY PAGE - Optimized spacing ===== */}
 
-          {/* Category Header */}
-          <div className="bg-white py-16 border-b border-gray-100">
+          {/* Category Header - Reduced padding */}
+          <div className="bg-white py-10 md:py-12">
             <div className="max-w-7xl mx-auto px-4 text-center">
               <h1
-                className="text-4xl md:text-5xl lg:text-6xl text-gray-800 mb-4 tracking-[0.1em] uppercase"
+                className="text-3xl md:text-4xl lg:text-5xl text-gray-800 mb-2 tracking-[0.15em] uppercase"
                 style={{
                   fontFamily: "'Playfair Display', Georgia, serif",
                   fontWeight: 400,
@@ -181,29 +153,17 @@ function Home() {
               >
                 {selectedCategory.name}
               </h1>
-              <p className="text-gray-500">
-                Découvrez notre collection de{" "}
-                {selectedCategory.name.toLowerCase()}
-              </p>
             </div>
           </div>
 
-          {/* Trust Badges */}
+          {/* Trust Badges - Compact */}
           <TrustBadges />
 
-          {/* Products Grid */}
-          <section className="flex-1 py-16 bg-white">
+          {/* Products Grid - Reduced top padding */}
+          <section className="flex-1 py-8 md:py-10 bg-[#faf8f5]">
             <div className="max-w-7xl mx-auto px-4">
-              {/* Product Count */}
-              <div className="text-center mb-12">
-                <p className="text-sm text-gray-500">
-                  {filteredProducts.length} produit
-                  {filteredProducts.length > 1 ? "s" : ""}
-                </p>
-              </div>
-
               {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {filteredProducts.map((product) => (
                     <ProductCard
                       key={product.id}
@@ -229,12 +189,10 @@ function Home() {
             </div>
           </section>
 
-          {/* Newsletter */}
           <Newsletter />
         </>
       )}
 
-      {/* 7. Footer */}
       <Footer />
     </div>
   );

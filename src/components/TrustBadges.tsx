@@ -80,50 +80,47 @@ function TrustBadges() {
     {
       icon: DeliveryIcon,
       title: "Livraison offerte",
-      description: "Dès 50€ d'achat",
+      description: "Dès 50€",
     },
     {
       icon: SecureIcon,
       title: "Paiement sécurisé",
-      description: "Par Stripe",
+      description: "Stripe",
     },
     {
       icon: FranceIcon,
       title: "Made in France",
-      description: "Artisanat français",
+      description: "Artisanat",
     },
     {
       icon: ReturnIcon,
       title: "Retours gratuits",
-      description: "Sous 30 jours",
+      description: "30 jours",
     },
   ];
 
   return (
-    <section className="py-8 md:py-10 bg-white border-b border-gray-100">
+    <section className="py-4 md:py-5 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        <div className="flex flex-wrap justify-center md:justify-between items-center gap-4 md:gap-6">
           {badges.map((badge, index) => {
             const IconComponent = badge.icon;
             return (
-              <div
-                key={badge.title}
-                className="flex flex-col items-center text-center gap-3 p-4"
-              >
-                {/* Icon - Plus grand */}
-                <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-[#faf8f5]">
-                  <IconComponent className="w-6 h-6 md:w-7 md:h-7 text-[#c5a880]" />
+              <div key={badge.title} className="flex items-center gap-2.5">
+                {/* Icon */}
+                <div className="w-9 h-9 flex items-center justify-center rounded-full bg-[#faf8f5]">
+                  <IconComponent className="w-4 h-4 text-[#c5a880]" />
                 </div>
 
                 {/* Text */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col">
                   <span
-                    className="text-sm md:text-base uppercase tracking-[0.1em] text-gray-800 font-medium"
+                    className="text-xs uppercase tracking-[0.05em] text-gray-700 font-medium"
                     style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                   >
                     {badge.title}
                   </span>
-                  <span className="text-xs md:text-sm text-gray-500">
+                  <span className="text-[10px] text-gray-400">
                     {badge.description}
                   </span>
                 </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Category, Product } from "../types";
 import { useCart } from "../context/CartContext";
 
@@ -15,6 +15,7 @@ function CategoryShowcase({
   onCategoryClick,
 }: CategoryShowcaseProps) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   // Get first product of each category
   const getFirstProduct = (categoryId: number): Product | undefined => {
@@ -28,6 +29,14 @@ function CategoryShowcase({
     lunettes: "/images/categories/Lunettes.jpg",
   };
 
+  // Handle navigation with scroll to top
+  const handleNavigate = (category: Category) => {
+    onCategoryClick(category);
+    navigate(`/category/${category.slug}`);
+    // Scroll to top after navigation
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -37,11 +46,11 @@ function CategoryShowcase({
             {categories.map((category, index) => (
               <button
                 key={category.id}
-                onClick={() => onCategoryClick(category)}
+                onClick={() => handleNavigate(category)}
                 className="group relative"
               >
                 <span
-                  className="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-800 tracking-[0.2em] uppercase transition-all duration-300 hover:text-gray-500"
+                  className="text-4xl md:text-5xl lg:text-6xl font-serif text-gray-800 tracking-[0.2em] uppercase transition-all duration-300 hover:text-[#c5a880]"
                   style={{
                     fontFamily: "'Playfair Display', Georgia, serif",
                     animationDelay: `${index * 150}ms`,
@@ -49,7 +58,7 @@ function CategoryShowcase({
                 >
                   {category.name}
                 </span>
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gray-800 transition-all duration-300 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#c5a880] transition-all duration-300 group-hover:w-full" />
               </button>
             ))}
           </div>
@@ -68,7 +77,7 @@ function CategoryShowcase({
                 category={category}
                 categoryImage={categoryImage}
                 firstProduct={firstProduct}
-                onCategoryClick={onCategoryClick}
+                onCategoryClick={handleNavigate}
                 onAddToCart={addToCart}
               />
             );

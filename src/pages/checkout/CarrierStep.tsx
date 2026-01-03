@@ -12,114 +12,143 @@ function CarrierStep() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const navigate = useNavigate();
-  const { state, setSelectedCarrier} = useCheckout();
+  const { state, setSelectedCarrier } = useCheckout();
 
-  // Redirect if no address selected
   useEffect(() => {
     if (!state.selectedAddress) {
-        navigate('/checkout/address')
+      navigate("/checkout/address");
     }
   }, [state.selectedAddress, navigate]);
 
-// fetch carriers
-useEffect(() => {
+  useEffect(() => {
     const fetchCarriers = async () => {
-        try {
-            setLoading(true);
-            const data = await api.getCarriers();
-            setCarriers(data);
-
-            if (data.length > 0) {
-                setSelectedId(data[0].id);
-            }
-          } catch (err) {
-        setError('Impossible de charger les modes de livraison');
+      try {
+        setLoading(true);
+        const data = await api.getCarriers();
+        setCarriers(data);
+        if (data.length > 0) {
+          setSelectedId(data[0].id);
+        }
+      } catch (err) {
+        setError("Impossible de charger les modes de livraison");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCarriers();
   }, []);
 
-  // handle continue to next step
   const handleContinue = () => {
-    const selected = carriers.find(c => c.id === selectedId);
+    const selected = carriers.find((c) => c.id === selectedId);
     if (selected) {
-        setSelectedCarrier(selected);
-        navigate('/checkout/summary');
+      setSelectedCarrier(selected);
+      navigate("/checkout/summary");
     }
   };
 
-  // Handle go back
   const handleBack = () => {
-    navigate('/checkout/address');
+    navigate("/checkout/address");
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border border-gray-300 border-t-[#2c3e50] rounded-full animate-spin mx-auto"></div>
+          <p
+            className="mt-6 text-gray-500 text-sm uppercase tracking-[0.2em]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Chargement
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4">
-        {/* Steps indicator */}
+    <div className="min-h-screen bg-[#faf8f5]">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <button
+            onClick={handleBack}
+            className="text-gray-500 hover:text-[#c5a880] flex items-center text-sm transition-colors"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Retour à l'adresse
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 py-10">
         <CheckoutSteps currentStep="carrier" />
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <h1
+          className="text-2xl md:text-3xl text-gray-800 mb-8 text-center"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
           Mode de livraison
         </h1>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm text-center">
             {error}
           </div>
         )}
 
         {/* Selected address summary */}
         {state.selectedAddress && (
-          <div className="bg-gray-100 rounded-lg p-4 mb-6">
-            <p className="text-sm text-gray-500 mb-1">Livraison à :</p>
-            <p className="font-semibold">
+          <div className="bg-white p-5 mb-8">
+            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+              Livraison à
+            </p>
+            <p
+              className="text-gray-800"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
               {state.selectedAddress.firstname} {state.selectedAddress.lastname}
             </p>
-            <p className="text-gray-600">
-              {state.selectedAddress.address}, {state.selectedAddress.postal} {state.selectedAddress.city}
+            <p className="text-gray-500 text-sm">
+              {state.selectedAddress.address}, {state.selectedAddress.postal}{" "}
+              {state.selectedAddress.city}
             </p>
           </div>
         )}
 
         {/* Carriers list */}
-        <div className="space-y-4 mb-6">
-          {carriers.map(carrier => (
+        <div className="space-y-4 mb-8">
+          {carriers.map((carrier) => (
             <div
               key={carrier.id}
               onClick={() => setSelectedId(carrier.id)}
-              className={`
-                p-4 bg-white rounded-lg border-2 cursor-pointer transition-colors
-                ${selectedId === carrier.id
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
-                }
-              `}
+              className={`p-5 bg-white cursor-pointer transition-all ${
+                selectedId === carrier.id
+                  ? "ring-2 ring-[#c5a880]"
+                  : "hover:shadow-md"
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  {/* Radio indicator */}
                   <div
-                    className={`
-                      w-5 h-5 rounded-full border-2 mr-4 flex-shrink-0
-                      flex items-center justify-center
-                      ${selectedId === carrier.id
-                        ? 'border-blue-600 bg-blue-600'
-                        : 'border-gray-300'
-                      }
-                    `}
+                    className={`w-5 h-5 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center transition-colors ${
+                      selectedId === carrier.id
+                        ? "border-[#c5a880] bg-[#c5a880]"
+                        : "border-gray-300"
+                    }`}
                   >
                     {selectedId === carrier.id && (
                       <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -127,20 +156,28 @@ useEffect(() => {
                   </div>
 
                   <div>
-                    <p className="font-semibold text-gray-900">{carrier.name}</p>
-                    <p className="text-gray-600 text-sm">{carrier.description}</p>
+                    <p
+                      className="text-gray-800"
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                    >
+                      {carrier.name}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      {carrier.description}
+                    </p>
                   </div>
                 </div>
 
-                {/* Price */}
-                <div className="text-right">
-                  <p className="font-bold text-gray-900">
-                    {carrier.price === 0 
-                      ? 'Gratuit' 
-                      : `${carrier.price.toFixed(2).replace('.', ',')} €`
-                    }
-                  </p>
-                </div>
+                <p
+                  className="text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  {carrier.price === 0
+                    ? "Gratuit"
+                    : `${carrier.price.toFixed(2).replace(".", ",")} €`}
+                </p>
               </div>
             </div>
           ))}
@@ -151,7 +188,7 @@ useEffect(() => {
           <button
             type="button"
             onClick={handleBack}
-            className="flex-1 py-4 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50"
+            className="flex-1 py-4 border border-gray-300 text-gray-600 hover:bg-white transition-colors text-sm"
           >
             Retour
           </button>
@@ -159,13 +196,12 @@ useEffect(() => {
             type="button"
             onClick={handleContinue}
             disabled={!selectedId}
-            className={`
-              flex-1 py-4 rounded-lg font-semibold text-white transition-colors
-              ${selectedId
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'bg-gray-300 cursor-not-allowed'
-              }
-            `}
+            className={`flex-1 py-4 text-sm uppercase tracking-[0.15em] transition-colors ${
+              selectedId
+                ? "bg-[#2c3e50] text-white hover:bg-[#34495e]"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
             Continuer
           </button>
