@@ -18,8 +18,13 @@ function CategoryShowcase({
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  // Get first product of each category
   const getFirstProduct = (categoryId: number): Product | undefined => {
+    const featured = products.find(
+      (P) => P.category.id === categoryId && P.isHomepage
+    );
+    if (featured) return featured;
+    // else, return the first product of category
+
     return products.find((p) => p.category.id === categoryId);
   };
 
