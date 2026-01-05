@@ -18,7 +18,7 @@ function Footer() {
                 GHAZALÉA
               </h2>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
               Maison française d'accessoires de mode. Sacs, bijoux et lunettes
               conçus avec passion et savoir-faire artisanal.
             </p>
@@ -76,7 +76,7 @@ function Footer() {
           {/* Boutique Links */}
           <div>
             <h4
-              className="text-sm uppercase tracking-[0.2em] text-[#c5a880] mb-6"
+              className="uppercase tracking-[0.2em] text-[#c5a880] mb-6"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
               Boutique
@@ -85,7 +85,7 @@ function Footer() {
               <li>
                 <Link
                   to="/category/sacs"
-                  className="text-gray-400 text-sm hover:text-white transition-colors"
+                  className="text-gray-300 text-sm hover:text-white transition-colors"
                 >
                   Sacs
                 </Link>
@@ -93,7 +93,7 @@ function Footer() {
               <li>
                 <Link
                   to="/category/bijoux"
-                  className="text-gray-400 text-sm hover:text-white transition-colors"
+                  className="text-gray-300 text-sm hover:text-white transition-colors"
                 >
                   Bijoux
                 </Link>
@@ -101,7 +101,7 @@ function Footer() {
               <li>
                 <Link
                   to="/category/lunettes"
-                  className="text-gray-400 text-sm hover:text-white transition-colors"
+                  className="text-gray-300 text-sm hover:text-white transition-colors"
                 >
                   Lunettes
                 </Link>
@@ -109,7 +109,7 @@ function Footer() {
               <li>
                 <Link
                   to="/favorites"
-                  className="text-gray-400 text-sm hover:text-white transition-colors"
+                  className="text-gray-300 text-sm hover:text-white transition-colors"
                 >
                   Mes favoris
                 </Link>
@@ -120,16 +120,15 @@ function Footer() {
           {/* Developer Contact - YOUR INFO */}
           <div>
             <h4
-              className="text-sm uppercase tracking-[0.2em] text-[#c5a880] mb-6"
+              className="uppercase tracking-[0.2em] text-[#c5a880] mb-6"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
               Développeur
             </h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              {/* Your Name */}
+            <ul className="space-y-3 text-sm text-gray-300">
+
               <li className="text-white font-medium">Ghazal Soltani</li>
 
-              {/* Email */}
               <li className="flex items-center gap-3">
                 <svg
                   className="w-4 h-4 text-[#c5a880] flex-shrink-0"
@@ -146,13 +145,12 @@ function Footer() {
                 </svg>
                 <a
                   href="mailto:votre.email@gmail.com"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   ghazal.soltaninasab@gmail.com
                 </a>
               </li>
 
-              {/* LinkedIn */}
               <li className="flex items-center gap-3">
                 <svg
                   className="w-4 h-4 text-[#c5a880] flex-shrink-0"
@@ -165,13 +163,12 @@ function Footer() {
                   href="https://linkedin.com/in/ghazal-soltani/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   LinkedIn
                 </a>
               </li>
 
-              {/* GitHub */}
               <li className="flex items-center gap-3">
                 <svg
                   className="w-4 h-4 text-[#c5a880] flex-shrink-0"
@@ -184,7 +181,7 @@ function Footer() {
                   href="https://github.com/ghazalsoltani"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   GitHub
                 </a>
@@ -200,18 +197,18 @@ function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             {/* Copyright + Portfolio mention */}
             <div className="text-center md:text-left">
-              <p className="text-gray-500 text-xs">
+              <p className="text-gray-400 text-xs">
                 © {currentYear} Ghazaléa — Projet fictif réalisé pour
                 démonstration
               </p>
-              <p className="text-gray-500 text-xs mt-1">
+              <p className="text-gray-400 text-xs mt-1">
                 Développé avec React, TypeScript, Symfony & Tailwind CSS
               </p>
             </div>
 
             {/* Payment Methods */}
             <div className="flex items-center gap-3">
-              <span className="text-gray-500 text-xs mr-2">
+              <span className="text-gray-400 text-xs mr-2">
                 Paiement sécurisé
               </span>
 
