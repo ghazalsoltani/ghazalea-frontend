@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Product } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
+import { getImageUrl } from "../config";
 
 interface ProductCardProps {
   readonly product: Product;
@@ -16,7 +17,7 @@ function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
 
   const priceWithTax = product.price * (1 + product.tva / 100);
-  const imageUrl = `http://127.0.0.1:8080/uploads/${product.illustration}`;
+  const imageUrl = getImageUrl(product.illustration);
 
   // Check wishlist status from context (instant, no API call!)
   const inWishlist = isInWishlist(product.id);

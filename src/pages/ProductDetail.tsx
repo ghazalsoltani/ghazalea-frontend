@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { getImageUrl } from "../config";
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -159,7 +160,7 @@ function ProductDetail() {
             <div className="relative group">
               <div className="aspect-[4/5] bg-white overflow-hidden">
                 <img
-                  src={`http://127.0.0.1:8080/uploads/${product.illustration}`}
+                  src={getImageUrl(product.illustration)}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />

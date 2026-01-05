@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Category, Product } from "../types";
 import { useCart } from "../context/CartContext";
+import { getImageUrl } from "../config";
 
 interface CategoryShowcaseProps {
   categories: Category[];
@@ -110,8 +111,11 @@ function CategoryCard({
     ? firstProduct.price * (1 + firstProduct.tva / 100)
     : 0;
 
+  const API_BASE_URL =
+    process.env.REACT_APP_API_URL?.replace("/api", "") ||
+    "http://127.0.0.1:8080";
   const productImage = firstProduct
-    ? `http://127.0.0.1:8080/uploads/${firstProduct.illustration}`
+    ? getImageUrl(firstProduct.illustration)
     : categoryImage;
 
   const handleAddToCart = (e: React.MouseEvent) => {

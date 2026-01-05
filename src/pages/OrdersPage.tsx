@@ -4,6 +4,7 @@ import { api } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { getImageUrl } from "../config";
 
 // Order state labels with Ghazaléa colors
 const stateLabels: { [key: number]: { label: string; color: string } } = {
@@ -175,7 +176,7 @@ function OrdersPage() {
                           >
                             <div className="w-16 h-16 bg-gray-50 flex-shrink-0">
                               <img
-                                src={`http://127.0.0.1:8080/uploads/${detail.productIllustration}`}
+                                src={getImageUrl(detail.productIllustration)}
                                 alt={detail.productName}
                                 className="w-full h-full object-cover"
                               />

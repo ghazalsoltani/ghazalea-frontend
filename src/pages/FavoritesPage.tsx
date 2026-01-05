@@ -6,6 +6,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { api } from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { getImageUrl } from "../config";
 
 function FavoritesPage() {
   const [favorites, setFavorites] = useState<Product[]>([]);
@@ -161,7 +162,7 @@ function FavoritesPage() {
                     <div className="relative aspect-[3/4] bg-white overflow-hidden mb-4">
                       <Link to={`/product/${product.id}`}>
                         <img
-                          src={`http://127.0.0.1:8080/uploads/${product.illustration}`}
+                          src={getImageUrl(product.illustration)}
                           alt={product.name}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
