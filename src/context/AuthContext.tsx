@@ -146,7 +146,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
     
     // Force page reload to reset all React state (cart, wishlist, etc.)
-    window.location.href = '/home';
+    window.location.href = '/';
   };
 
   const isAuthenticated = !!token && !!user;

@@ -213,7 +213,7 @@ function SuccessPage() {
             Voir mes commandes
           </Link>
           <Link
-            to="/home"
+            to="/"
             className="flex-1 py-4 border border-gray-300 text-gray-600 text-sm uppercase tracking-[0.15em] hover:bg-white transition-colors text-center"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >

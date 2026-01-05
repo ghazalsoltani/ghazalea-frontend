@@ -41,7 +41,7 @@ function FavoritesPage() {
 
   const handleCategoryClick = (category: Category | null) => {
     if (category === null) {
-      navigate("/home");
+      navigate("/");
     } else {
       navigate(`/category/${category.slug}`);
     }
@@ -144,7 +144,7 @@ function FavoritesPage() {
                 cliquant sur le cœur
               </p>
               <Link
-                to="/home"
+                to="/"
                 className="inline-block px-10 py-4 bg-[#2c3e50] text-white text-sm uppercase tracking-[0.2em] hover:bg-[#34495e] transition-colors"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >

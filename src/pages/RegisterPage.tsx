@@ -85,7 +85,7 @@ function RegisterPage() {
     <div className="min-h-screen bg-[#faf8f5] flex flex-col">
       {/* Header */}
       <div className="py-8 text-center">
-        <Link to="/home">
+        <Link to="/">
           <h1
             className="text-2xl text-gray-800 tracking-[0.15em]"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -218,7 +218,7 @@ function RegisterPage() {
           {/* Back to home */}
           <div className="text-center mt-8">
             <Link
-              to="/home"
+              to="/"
               className="text-gray-400 text-sm hover:text-[#c5a880] transition-colors"
             >
               ← Retour à la boutique

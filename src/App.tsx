@@ -4,7 +4,6 @@ import { CartProvider } from "./context/CartContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
-import Home from "./pages/Home";
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -20,6 +19,8 @@ import SuccessPage from "./pages/checkout/SuccessPage";
 import CancelPage from "./pages/checkout/CancelPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
+
 
 function App() {
   return (
@@ -29,11 +30,9 @@ function App() {
           <CartProvider>
             <CheckoutProvider>
               <Routes>
-                {/* Redirect root to home */}
-                <Route path="/" element={<Navigate to="/home" replace />} />
-
+              
                 {/* Public routes */}
-                <Route path="/home" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/category/:slug" element={<Home />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<CartPage />} />

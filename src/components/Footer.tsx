@@ -10,7 +10,7 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
           {/* Brand */}
           <div>
-            <Link to="/home" className="inline-block mb-6">
+            <Link to="/" className="inline-block mb-6">
               <h2
                 className="text-2xl text-white tracking-[0.15em]"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}

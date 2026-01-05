@@ -53,7 +53,7 @@ function ProductDetail() {
 
   const handleCategoryClick = (category: Category | null) => {
     if (category === null) {
-      navigate("/home");
+      navigate("/");
     } else {
       navigate(`/category/${category.slug}`);
     }
@@ -114,7 +114,7 @@ function ProductDetail() {
               Produit non trouvé
             </h1>
             <Link
-              to="/home"
+              to="/"
               className="text-[#c5a880] hover:text-[#b8956d] transition-colors"
             >
               ← Retour à l'accueil
@@ -136,7 +136,7 @@ function ProductDetail() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-500">
-            <Link to="/home" className="hover:text-[#c5a880] transition-colors">
+            <Link to="/" className="hover:text-[#c5a880] transition-colors">
               Accueil
             </Link>
             <span className="text-gray-300">—</span>

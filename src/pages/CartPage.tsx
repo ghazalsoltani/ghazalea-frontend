@@ -22,7 +22,7 @@ function CartPage() {
         <nav className="bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <Link
-              to="/home"
+              to="/"
               className="text-gray-600 hover:text-[#c5a880] flex items-center transition-colors"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
@@ -72,7 +72,7 @@ function CartPage() {
             panier
           </p>
           <Link
-            to="/home"
+            to="/"
             className="inline-block px-10 py-4 bg-[#2c3e50] text-white text-sm uppercase tracking-[0.2em] hover:bg-[#34495e] transition-colors"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
@@ -90,7 +90,7 @@ function CartPage() {
       <nav className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <Link
-            to="/home"
+            to="/"
             className="text-gray-600 hover:text-[#c5a880] flex items-center transition-colors"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >

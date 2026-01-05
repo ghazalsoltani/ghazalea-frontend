@@ -55,7 +55,7 @@ export default function Navbar({
         <div className="flex justify-between items-center h-16 lg:h-20">
           {/* Logo */}
           <Link
-            to="/home"
+            to="/"
             className="flex-shrink-0 transition-opacity hover:opacity-80"
           >
             <img

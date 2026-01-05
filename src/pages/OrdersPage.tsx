@@ -44,7 +44,7 @@ function OrdersPage() {
 
   const handleCategoryClick = (category: Category | null) => {
     if (category === null) {
-      navigate("/home");
+      navigate("/");
     } else {
       navigate(`/category/${category.slug}`);
     }
@@ -120,7 +120,7 @@ function OrdersPage() {
                 Vous n'avez pas encore passé de commande.
               </p>
               <Link
-                to="/home"
+                to="/"
                 className="inline-block px-10 py-4 bg-[#2c3e50] text-white text-sm uppercase tracking-[0.15em] hover:bg-[#34495e] transition-colors"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >

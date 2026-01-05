@@ -25,7 +25,7 @@ function AccountPage() {
 
   const handleCategoryClick = (category: Category | null) => {
     if (category === null) {
-      navigate("/home");
+      navigate("/");
     } else {
       navigate(`/category/${category.slug}`);
     }
