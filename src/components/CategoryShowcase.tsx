@@ -25,9 +25,9 @@ function CategoryShowcase({
 
   // Category images mapping
   const categoryImages: Record<string, string> = {
-    sacs: "/images/categories/Sacs.jpg",
-    bijoux: "/images/categories/Bijoux.jpg",
-    lunettes: "/images/categories/Lunettes.jpg",
+    sacs: "/images/categories/sacs.jpg",
+    bijoux: "/images/categories/bijoux.jpg",
+    lunettes: "/images/categories/lunettes.jpg",
   };
 
   // Handle navigation with scroll to top
