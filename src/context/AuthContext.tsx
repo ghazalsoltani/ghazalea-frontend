@@ -94,10 +94,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // FUNCTION: Login
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:8080/api/login_check', {
-        method: 'POST',
+      const API_URL =
+        process.env.REACT_APP_API_URL || "http://localhost:8080/api";
+      const response = await fetch(`${API_URL}/login_check`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: email,

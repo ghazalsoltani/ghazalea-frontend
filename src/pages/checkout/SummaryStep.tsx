@@ -4,6 +4,7 @@ import { useCart } from "../../context/CartContext";
 import { useCheckout } from "../../context/CheckoutContext";
 import { api } from "../../services/api";
 import CheckoutSteps from "../../components/CheckoutSteps";
+import { getImageUrl } from "../../config";
 
 function SummaryStep() {
   const [loading, setLoading] = useState(false);
@@ -193,7 +194,7 @@ function SummaryStep() {
                     >
                       <div className="w-16 h-16 bg-gray-50 flex-shrink-0">
                         <img
-                          src={`http://localhost:8080/uploads/${item.product.illustration}`}
+                          src={getImageUrl(item.product.illustration)}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                         />

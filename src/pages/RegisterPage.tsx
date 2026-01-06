@@ -48,7 +48,9 @@ function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/register", {
+      const API_URL =
+        process.env.REACT_APP_API_URL || "http://localhost:8080/api";
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

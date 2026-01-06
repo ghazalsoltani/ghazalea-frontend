@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { getImageUrl } from "../config";
 
 function CartPage() {
   const {
@@ -148,7 +149,7 @@ function CartPage() {
                     className="relative w-28 h-28 md:w-36 md:h-36 flex-shrink-0 overflow-hidden bg-gray-50"
                   >
                     <img
-                      src={`http://localhost:8080/uploads/${item.product.illustration}`}
+                      src={getImageUrl(item.product.illustration)}
                       alt={item.product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
