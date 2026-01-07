@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
 function HeroSection() {
@@ -48,10 +47,8 @@ function HeroSection() {
           poster="/images/hero-leather.jpg"
         >
           <source src="/videos/hero.mp4" type="video/mp4" />
-          {/* Fallback to image if video not supported */}
         </video>
 
-        {/* Overlay gradient for better text readability */}
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
       </div>
@@ -76,18 +73,6 @@ function HeroSection() {
         >
           Des pièces uniques pensées pour sublimer chaque instant.
         </p>
-
-        {/* CTA Button - Elegant style */}
-        {/* <Link
-          to="/category/sacs"
-          className="group relative inline-flex items-center justify-center px-10 py-4 text-sm md:text-base uppercase tracking-[0.25em]
-          bg-white/90 text-gray-900 backdrop-blur-sm
-          hover:bg-white hover:scale-105
-          transition-all duration-300 shadow-lg"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
-          Découvrir la Collection
-        </Link> */}
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">

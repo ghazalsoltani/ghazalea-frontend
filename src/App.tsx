@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
@@ -21,7 +21,6 @@ import CancelPage from "./pages/checkout/CancelPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 
-
 function App() {
   return (
     <BrowserRouter>
@@ -30,7 +29,6 @@ function App() {
           <CartProvider>
             <CheckoutProvider>
               <Routes>
-              
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/category/:slug" element={<Home />} />

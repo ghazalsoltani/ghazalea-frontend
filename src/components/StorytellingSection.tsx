@@ -17,7 +17,6 @@ function StorytellingSection() {
             }}
           />
 
-          {/* Warm Sepia/Gold Overlay - Luxurious feel */}
           <div
             className="absolute inset-0 mix-blend-multiply opacity-20"
             style={{
@@ -26,7 +25,6 @@ function StorytellingSection() {
             }}
           />
 
-          {/* Soft Vignette Effect */}
           <div
             className="absolute inset-0"
             style={{

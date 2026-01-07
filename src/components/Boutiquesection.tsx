@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 function BoutiqueSection() {
   const handleDirections = () => {
     window.open(
@@ -290,8 +288,7 @@ function BoutiqueSection() {
           </div>
 
           {/* Floating Text - Building info */}
-          <div className="absolute bottom-8 right-8 text-right hidden lg:block">
-          </div>
+          <div className="absolute bottom-8 right-8 text-right hidden lg:block"></div>
         </div>
       </div>
     </section>

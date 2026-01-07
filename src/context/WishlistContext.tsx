@@ -71,7 +71,7 @@ export function WishlistProvider({ children }: WishlistProviderProps) {
     async (productId: number) => {
       if (!isAuthenticated) return;
 
-      // Optimistic update - use Array.from to avoid spread operator issue
+      // Optimistic update
       setWishlistIds((prev) => {
         const newSet = new Set(Array.from(prev));
         newSet.add(productId);
