@@ -63,7 +63,6 @@ function ProductDetail() {
     if (product) {
       addToCart(product);
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
     }
   };
 
