@@ -116,9 +116,6 @@ function CategoryCard({
     ? firstProduct.price * (1 + firstProduct.tva / 100)
     : 0;
 
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL?.replace("/api", "") ||
-    "http://127.0.0.1:8080";
   const productImage = firstProduct
     ? getImageUrl(firstProduct.illustration)
     : categoryImage;

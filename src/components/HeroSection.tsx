@@ -22,7 +22,7 @@ function HeroSection() {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [texts.length]);
 
   // Ensure video plays on mobile
   useEffect(() => {

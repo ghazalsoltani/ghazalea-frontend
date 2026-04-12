@@ -7,7 +7,6 @@ import { useCheckout } from "../../context/CheckoutContext";
 function SuccessPage() {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [verified, setVerified] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +27,6 @@ function SuccessPage() {
         const result = await api.verifyPayment(sessionId);
 
         if (result.success && result.paid) {
-          setVerified(true);
           setOrderId(result.orderId || null);
           clearCart();
           resetCheckout();
